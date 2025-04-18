@@ -52,7 +52,7 @@ col3.metric("Level 2", level_2)
 st.subheader("📈 Org Chart Preview")
 
 # Build DOT string manually
-dot_string = "digraph G {\n"
+dot_string = "digraph G {\nlayout=neato;\n"
 dot_string += 'Boss [label="Boss", shape="box"];\n'
 
 # Managers
