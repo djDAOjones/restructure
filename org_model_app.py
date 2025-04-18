@@ -76,4 +76,4 @@ for m in range(num_managers):
         worker_id += 1
 
 # Display org chart with larger height
-st.graphviz_chart(dot, height=600)
+st.graphviz_chart(dot.source, height=600)
