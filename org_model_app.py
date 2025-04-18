@@ -33,7 +33,7 @@ import graphviz
 st.subheader("📈 Org Chart Preview")
 
 # Generate Graphviz dot code
-dot = graphviz.Digraph(engine="twopi")  # or "twopi", "circo"
+dot = graphviz.Digraph(engine="circo")  # or "twopi", "circo"
 
 
 # Add boss node
