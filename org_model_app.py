@@ -33,7 +33,7 @@ import graphviz
 st.subheader("📈 Org Chart Preview")
 
 # Generate Graphviz dot code
-dot_string = "digraph G {\nlayout=neato;\n"
+dot = graphviz.Digraph()
 
 # Add boss node
 dot.node("Boss", "👑 Boss")
