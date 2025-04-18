@@ -82,7 +82,7 @@ dot_string += "}"
 st.graphviz_chart(dot_string)
 
 # Add another spacer after chart
-st.markdown("<div style='height:40px'></div>", unsafe_allow_html=True)
+st.markdown("<div style='height:300px'></div>", unsafe_allow_html=True)
 
 # Alt-text for accessibility
 st.markdown(
