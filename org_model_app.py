@@ -2,18 +2,7 @@ import streamlit as st
 import graphviz
 
 st.set_page_config(page_title="Org Chart", layout="centered")
-
-# --- Build Org Chart ---
-dot = graphviz.Digraph(engine="circo")  # Use circular layout
-dot.attr(ranksep="1.5", nodesep="1.0")
-
-# Boss node
-dot.node("Boss", "Boss", shape="box")
 st.title("📇 Org Chart Builder")
-
-# --- Display chart preview before sliders ---
-st.subheader("📈 Org Chart Preview")
-st.graphviz_chart(dot)
 
 # --- Sliders for each team ---
 st.header("FSS Team (Formerly Learning Technologists)")
@@ -65,4 +54,6 @@ for w in range(1, content_num_staff + 1):
     dot.node(worker, f"Content Staff {w}")
     dot.edge(content_mgr, worker)
 
-
+# --- Display chart ---
+st.subheader("📈 Org Chart Preview")
+st.graphviz_chart(dot)
