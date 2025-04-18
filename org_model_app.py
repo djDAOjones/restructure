@@ -22,27 +22,13 @@ dot.attr(ranksep="1.5", nodesep="1.0")
 # Boss node
 dot.node("Boss", "Boss", shape="box")
 
-# --- FSS Leadership Cluster ---
+# --- FSS Leadership ---
 fss_lead = "FSS_Lead"
-
-with dot.subgraph(name="cluster_fss_leads") as c:
-    c.attr(label="FSS Leadership")
-    c.attr(style="dashed")
-    c.node(fss_lead, "FSS Manager")
-
-    for i in range(fss_num_managers - 1):
-        co_mgr = f"FSS_Co{i+1}"
-        c.node(co_mgr, f"FSS Co-Mgr {i+1}")
-
-# Connect only the main manager to the boss
+fss_label = f"FSS Manager{'s' if fss_num_managers > 1 else ''} ({fss_num_managers})"
+dot.node(fss_lead, fss_label)
 dot.edge("Boss", fss_lead)
 
-# Connect co-managers to the main manager
-for i in range(fss_num_managers - 1):
-    co_mgr = f"FSS_Co{i+1}"
-    dot.edge(fss_lead, co_mgr, constraint="false")
-
-# Workers report only to the main manager
+# Workers report to the FSS lead bubble
 for w in range(1, fss_num_staff + 1):
     worker = f"FSS_Worker{w}"
     dot.node(worker, f"FSS Staff {w}")
