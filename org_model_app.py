@@ -74,7 +74,7 @@ for m in range(num_managers):
         worker_id += 1
 
 # Dummy invisible nodes to stretch the graph vertically
-for i in range(10):  # Increase to 20+ if you need even more height
+for i in range(40):  # Increase to 20+ if you need even more height
     dummy_id = f"dummy{i}"
     dot_string += f'{dummy_id} [style=invis];\n'
     dot_string += f'Worker{num_workers} -> {dummy_id} [style=invis];\n'
