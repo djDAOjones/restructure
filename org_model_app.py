@@ -73,19 +73,7 @@ for m in range(num_managers):
         dot_string += f'{manager_id} -> {worker_label};\n'
         worker_id += 1
 
-# Dummy invisible nodes to stretch the graph vertically
-for i in range(40):  # Increase to 20+ if you need even more height
-    dummy_id = f"dummy{i}"
-    dot_string += f'{dummy_id} [style=invis];\n'
-    dot_string += f'Worker{num_workers} -> {dummy_id} [style=invis];\n'
-
 dot_string += "}"
 
-# Render org chart
+# Render org chart (clean and simple)
 st.graphviz_chart(dot_string)
-
-# Alt-text for accessibility
-st.markdown(
-    f"**Alt-text:** 1 Boss → {num_managers} Managers → {num_workers} Workers " +
-    f"({workers_per_manager} per manager)"
-)
