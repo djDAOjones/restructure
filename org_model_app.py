@@ -51,9 +51,6 @@ col3.metric("Level 2", level_2)
 # --- ORG CHART ---
 st.subheader("📈 Org Chart Preview")
 
-# Add spacer to simulate height
-st.markdown("<div style='height:40px'></div>", unsafe_allow_html=True)
-
 # Build DOT string manually
 dot_string = "digraph G {\n"
 dot_string += 'Boss [label="Boss", shape="box"];\n'
@@ -76,13 +73,16 @@ for m in range(num_managers):
         dot_string += f'{manager_id} -> {worker_label};\n'
         worker_id += 1
 
+# Dummy invisible nodes to stretch the graph vertically
+for i in range(10):  # Increase to 20+ if you need even more height
+    dummy_id = f"dummy{i}"
+    dot_string += f'{dummy_id} [style=invis];\n'
+    dot_string += f'Worker{num_workers} -> {dummy_id} [style=invis];\n'
+
 dot_string += "}"
 
 # Render org chart
 st.graphviz_chart(dot_string)
-
-# Add another spacer after chart
-st.markdown("<div style='height:300px'></div>", unsafe_allow_html=True)
 
 # Alt-text for accessibility
 st.markdown(
