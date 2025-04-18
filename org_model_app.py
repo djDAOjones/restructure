@@ -4,17 +4,11 @@ import graphviz
 st.set_page_config(page_title="Org Chart", layout="centered")
 st.title("📇 Org Chart Builder")
 
-# --- Display chart header early ---
-st.subheader("📈 Org Chart Preview")
-
 # --- Initialize Graph ---
 dot = graphviz.Digraph(engine="circo")  # Use circular layout
 dot.attr(ranksep="1.5", nodesep="1.0")
 
-# Boss node
-dot.node("Boss", "Boss", shape="box")
-
-# --- Sliders for each team ---
+# --- Sliders for each team (early, so we can build the graph fully before displaying) ---
 st.header("FSS Team (Formerly Learning Technologists)")
 fss_num_managers = st.slider("Number of Co-Managers (FSS)", 1, 4, 2)
 fss_num_staff = st.slider("Number of Staff (FSS)", 2, 20, 8)
@@ -26,6 +20,8 @@ st.header("Learning Content Team")
 content_num_staff = st.slider("Number of Learning Content Workers", 1, 15, 6)
 
 # --- Build Org Chart ---
+dot.node("Boss", "Boss", shape="box")
+
 # FSS Leadership
 fss_lead = "FSS_Lead"
 fss_label = " / ".join(["FSS Manager"] * fss_num_managers)
@@ -58,7 +54,6 @@ for w in range(1, content_num_staff + 1):
     dot.node(worker, f"Content Staff {w}")
     dot.edge(content_mgr, worker)
 
-st.graphviz_chart(dot)
-# --- Display chart at the top ---
+# --- Display chart FIRST ---
 st.subheader("📈 Org Chart Preview")
-
+st.graphviz_chart(dot)
