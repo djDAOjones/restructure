@@ -2,27 +2,27 @@ import streamlit as st
 import graphviz
 
 st.set_page_config(page_title="Org Chart", layout="centered")
-st.title("📇 Org Chart Builder")
+st.title("Restructure Chart")
 
 # Reserve chart space early
 chart_container = st.container()
 
 # --- Sliders for each team ---
-st.header("FSS Team (Formerly Learning Technologists)")
+st.header("Faculty and School Support (FSS)")
 fss_num_managers = st.slider("Number of Co-Managers (FSS)", 1, 4, 2)
-fss_num_staff = st.slider("Number of Staff (FSS)", 2, 20, 8)
+fss_num_staff = st.slider("Number of Staff (FSS)", 5, 20, 8)
 
-st.header("System Team")
-system_num_staff = st.slider("Number of System Workers", 1, 15, 5)
+st.header("Learning Systems Team")
+system_num_staff = st.slider("Number of System Workers", 3, 10, 5)
 
 st.header("Learning Content Team")
-content_num_staff = st.slider("Number of Learning Content Workers", 1, 15, 6)
+content_num_staff = st.slider("Number of Learning Content Workers", 1, 5, 3)
 
 # --- Build Org Chart ---
 dot = graphviz.Digraph(engine="circo")
 dot.attr(ranksep="1.5", nodesep="1.0")
 
-dot.node("Boss", "Boss", shape="box")
+dot.node("Boss", "Director", shape="box")
 
 # FSS
 fss_lead = "FSS_Lead"
@@ -54,5 +54,4 @@ for w in range(1, content_num_staff + 1):
 
 # --- Render chart at the top ---
 with chart_container:
-    st.subheader("📈 Org Chart Preview")
     st.graphviz_chart(dot)
