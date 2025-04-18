@@ -28,6 +28,37 @@ else:
 # --- Total count ---
 total_employees = num_bosses + num_managers + num_workers
 
+import graphviz
+
+st.subheader("📈 Org Chart Preview")
+
+# Generate Graphviz dot code
+dot = graphviz.Digraph()
+
+# Add boss node
+dot.node("Boss", "👑 Boss")
+
+# Add manager nodes
+for m in range(num_managers):
+    manager_id = f"Manager{m+1}"
+    dot.node(manager_id, f"🧑‍💼 {manager_id}")
+    dot.edge("Boss", manager_id)
+
+# Distribute workers across managers
+worker_id = 1
+for m in range(num_managers):
+    manager_id = f"Manager{m+1}"
+    for _ in range(workers_per_manager):
+        if worker_id > num_workers:
+            break
+        worker_label = f"Worker{worker_id}"
+        dot.node(worker_label, f"🛠️ {worker_label}")
+        dot.edge(manager_id, worker_label)
+        worker_id += 1
+
+# Display it
+st.graphviz_chart(dot)
+
 # --- Worker level breakdown ---
 st.subheader("🔢 Structure Breakdown")
 st.write(f"👑 Bosses (Level 6): {num_bosses}")
