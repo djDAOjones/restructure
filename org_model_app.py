@@ -4,6 +4,30 @@ import graphviz
 st.set_page_config(page_title="Org Chart", layout="centered")
 st.title("Restructure Chart")
 
+# Salary data and cost multipliers
+SALARY_COSTS = {
+    "Level 6": 109480,  # Director
+    "Level 5": 86498,   # Managers
+    "Level 4": 55747    # Workers (senior)
+}
+
+# Seniority adjustment slider
+seniority = st.slider("Global Staff Seniority (%)", 0, 100, 100)
+
+# Estimate average worker cost based on seniority percentage
+avg_worker_cost = round(SALARY_COSTS["Level 4"] * (seniority / 100) + SALARY_COSTS["Level 4"] * 0.7 * ((100 - seniority) / 100))
+
+# Placeholder for cost calculation
+costs = {
+    "Director": SALARY_COSTS["Level 6"],
+    "FSS Managers": 0,
+    "FSS Workers": 0,
+    "System Manager": SALARY_COSTS["Level 5"],
+    "System Workers": 0,
+    "Content Manager": SALARY_COSTS["Level 5"],
+    "Content Workers": 0
+}
+
 # Reserve chart space early
 chart_container = st.container()
 
@@ -36,7 +60,7 @@ for w in range(1, fss_num_staff + 1):
 
 # System
 sys_mgr = "Sys_Manager"
-dot.node(sys_mgr, "System Manager")
+dot.node(sys_mgr, "Systems Manager")
 dot.edge("Boss", sys_mgr)
 for w in range(1, system_num_staff + 1):
     worker = f"Sys_Worker{w}"
@@ -52,6 +76,24 @@ for w in range(1, content_num_staff + 1):
     dot.node(worker, f"Content Staff {w}")
     dot.edge(content_mgr, worker)
 
+# --- Calculate costs ---
+costs["FSS Managers"] = fss_num_managers * SALARY_COSTS["Level 5"]
+costs["FSS Workers"] = fss_num_staff * avg_worker_cost
+costs["System Workers"] = system_num_staff * avg_worker_cost
+costs["Content Workers"] = content_num_staff * avg_worker_cost
+
+total_cost = sum(costs.values())
+
+# --- Display total cost at top ---
+st.markdown(f"### 💷 Total Estimated Cost: £{total_cost:,.0f}")
+
 # --- Render chart at the top ---
 with chart_container:
     st.graphviz_chart(dot)
+
+# --- Team cost breakdown ---
+st.markdown("### Cost Breakdown by Team")
+st.table({
+    "Team": list(costs.keys()),
+    "Estimated Cost (£)": [f"£{v:,.0f}" for v in costs.values()]
+})
