@@ -48,22 +48,23 @@ col1.metric("Level 4", level_4)
 col2.metric("Level 3", level_3)
 col3.metric("Level 2", level_2)
 
-# --- ORG CHART (SAFE FOR STREAMLIT CLOUD) ---
-import graphviz as gv
-import tempfile
-import os
-
+# --- ORG CHART ---
 st.subheader("📈 Org Chart Preview")
 
-# Write the dot string (your existing code)
+# Add spacer to simulate height
+st.markdown("<div style='height:40px'></div>", unsafe_allow_html=True)
+
+# Build DOT string manually
 dot_string = "digraph G {\n"
 dot_string += 'Boss [label="Boss", shape="box"];\n'
 
+# Managers
 for m in range(num_managers):
     manager_id = f"Manager{m+1}"
     dot_string += f'{manager_id} [label="{manager_id}"];\n'
     dot_string += f'Boss -> {manager_id};\n'
 
+# Workers
 worker_id = 1
 for m in range(num_managers):
     manager_id = f"Manager{m+1}"
@@ -77,11 +78,14 @@ for m in range(num_managers):
 
 dot_string += "}"
 
-# Render the chart to PNG using graphviz
-with tempfile.TemporaryDirectory() as tmpdirname:
-    path = os.path.join(tmpdirname, "org_chart")
-    src = gv.Source(dot_string, format="png")
-    output_path = src.render(filename=path, cleanup=True)
+# Render org chart
+st.graphviz_chart(dot_string)
 
-    # Show the PNG in Streamlit with custom height
-    st.image(output_path, caption="Org Chart", use_column_width=False)
+# Add another spacer after chart
+st.markdown("<div style='height:40px'></div>", unsafe_allow_html=True)
+
+# Alt-text for accessibility
+st.markdown(
+    f"**Alt-text:** 1 Boss → {num_managers} Managers → {num_workers} Workers " +
+    f"({workers_per_manager} per manager)"
+)
