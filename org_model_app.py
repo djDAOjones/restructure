@@ -24,7 +24,7 @@ dot.node("Boss", "Boss", shape="box")
 
 # --- FSS Leadership ---
 fss_lead = "FSS_Lead"
-fss_label = f"FSS Manager{'s' if fss_num_managers > 1 else ''} ({fss_num_managers})"
+fss_label = " / ".join(["FSS Manager"] * fss_num_managers)
 dot.node(fss_lead, fss_label)
 dot.edge("Boss", fss_lead)
 
