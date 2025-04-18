@@ -75,5 +75,5 @@ for m in range(num_managers):
 
 dot_string += "}\n"
 
-# Display the org chart
-st.graphviz_chart(dot_string, height=600)
+# Show chart (no height argument)
+st.graphviz_chart(dot_string)
