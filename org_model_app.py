@@ -1,6 +1,5 @@
 import streamlit as st
 import math
-import graphviz
 
 # --- PAGE SETUP ---
 st.set_page_config(page_title="Org Structure Model", layout="centered")
@@ -33,12 +32,12 @@ else:
 
 # --- STRUCTURE OVERVIEW ---
 st.subheader("📊 Structure Summary")
-st.write(f"👑 Bosses (Level 6): {num_bosses}")
-st.write(f"🧑‍💼 Managers (Level 5): {num_managers}")
-st.write(f"🛠️ Workers (Level 2–4): {num_workers}")
-st.write(f"📋 Total Employees: **{total_employees}**")
+st.write(f"Bosses (Level 6): {num_bosses}")
+st.write(f"Managers (Level 5): {num_managers}")
+st.write(f"Workers (Level 2–4): {num_workers}")
+st.write(f"Total Employees: **{total_employees}**")
 
-# --- WORKER LEVEL BREAKDOWN (OPTIONAL) ---
+# --- WORKER LEVEL BREAKDOWN ---
 st.subheader("📉 Worker Level Breakdown (Est. Split)")
 level_4 = int(num_workers * 0.4)
 level_3 = int(num_workers * 0.35)
@@ -49,21 +48,20 @@ col1.metric("Level 4", level_4)
 col2.metric("Level 3", level_3)
 col3.metric("Level 2", level_2)
 
-# --- ORG CHART VISUALISATION ---
+# --- ORG CHART (SAFE FOR STREAMLIT CLOUD) ---
 st.subheader("📈 Org Chart Preview")
 
-dot = graphviz.Digraph(engine="dot")
-
-# Boss node
-dot.node("Boss", "👑 Boss", shape="box")
+# Build DOT string manually
+dot_string = "digraph G {\n"
+dot_string += 'Boss [label="Boss", shape="box"];\n'
 
 # Managers
 for m in range(num_managers):
     manager_id = f"Manager{m+1}"
-    dot.node(manager_id, f"🧑‍💼 {manager_id}")
-    dot.edge("Boss", manager_id)
+    dot_string += f'{manager_id} [label="{manager_id}"];\n'
+    dot_string += f'Boss -> {manager_id};\n'
 
-# Workers distributed across managers
+# Workers
 worker_id = 1
 for m in range(num_managers):
     manager_id = f"Manager{m+1}"
@@ -71,9 +69,11 @@ for m in range(num_managers):
         if worker_id > num_workers:
             break
         worker_label = f"Worker{worker_id}"
-        dot.node(worker_label, f"🛠️ {worker_label}")
-        dot.edge(manager_id, worker_label)
+        dot_string += f'{worker_label} [label="{worker_label}"];\n'
+        dot_string += f'{manager_id} -> {worker_label};\n'
         worker_id += 1
 
-# Display org chart with larger height
-st.graphviz_chart(dot.source, height=600)
+dot_string += "}\n"
+
+# Display the org chart
+st.graphviz_chart(dot_string, height=600)
