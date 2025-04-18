@@ -4,6 +4,16 @@ import graphviz
 st.set_page_config(page_title="Org Chart", layout="centered")
 st.title("📇 Org Chart Builder")
 
+# --- Build Org Chart ---
+dot = graphviz.Digraph(engine="circo")  # Use circular layout
+dot.attr(ranksep="1.5", nodesep="1.0")
+
+# Boss node
+dot.node("Boss", "Boss", shape="box")
+
+# Placeholder for dynamic FSS label
+fss_lead = "FSS_Lead"
+
 # --- Sliders for each team ---
 st.header("FSS Team (Formerly Learning Technologists)")
 fss_num_managers = st.slider("Number of Co-Managers (FSS)", 1, 4, 2)
@@ -15,15 +25,7 @@ system_num_staff = st.slider("Number of System Workers", 1, 15, 5)
 st.header("Learning Content Team")
 content_num_staff = st.slider("Number of Learning Content Workers", 1, 15, 6)
 
-# --- Build Org Chart ---
-dot = graphviz.Digraph(engine="circo")  # Use circular layout
-dot.attr(ranksep="1.5", nodesep="1.0")
-
-# Boss node
-dot.node("Boss", "Boss", shape="box")
-
 # --- FSS Leadership ---
-fss_lead = "FSS_Lead"
 fss_label = " / ".join(["FSS Manager"] * fss_num_managers)
 dot.node(fss_lead, fss_label)
 dot.edge("Boss", fss_lead)
