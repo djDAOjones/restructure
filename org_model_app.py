@@ -4,6 +4,9 @@ import graphviz
 st.set_page_config(page_title="Org Chart", layout="centered")
 st.title("📇 Org Chart Builder")
 
+# --- Display chart header early ---
+st.subheader("📈 Org Chart Preview")
+
 # --- Initialize Graph ---
 dot = graphviz.Digraph(engine="circo")  # Use circular layout
 dot.attr(ranksep="1.5", nodesep="1.0")
@@ -55,6 +58,7 @@ for w in range(1, content_num_staff + 1):
     dot.node(worker, f"Content Staff {w}")
     dot.edge(content_mgr, worker)
 
+st.graphviz_chart(dot)
 # --- Display chart at the top ---
 st.subheader("📈 Org Chart Preview")
-st.graphviz_chart(dot)
+
