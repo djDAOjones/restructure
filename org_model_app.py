@@ -16,7 +16,7 @@ st.header("Learning Content Team")
 content_num_staff = st.slider("Number of Learning Content Workers", 1, 15, 6)
 
 # --- Build Org Chart ---
-dot = graphviz.Digraph(engine="dot")
+dot = graphviz.Digraph(engine="circo")
 dot.attr(ranksep="1.5", nodesep="1.0")
 
 # Boss node
