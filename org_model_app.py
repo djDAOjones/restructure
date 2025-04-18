@@ -34,4 +34,32 @@ for i in range(lt_num_managers - 1):
 
 for w in range(1, lt_num_staff + 1):
     worker = f"LT_Worker{w}"
-    dot.node(worker, f"🛠
+    dot.node(worker, f"🛠️ LT Staff {w}")
+    dot.edge(lt_lead, worker)
+    for i in range(lt_num_managers - 1):
+        co_mgr = f"LT_Co{i+1}"
+        dot.edge(co_mgr, worker)
+
+# --- System Team ---
+sys_mgr = "Sys_Manager"
+dot.node(sys_mgr, "🧑‍💼 System Manager")
+dot.edge("Boss", sys_mgr)
+
+for w in range(1, system_num_staff + 1):
+    worker = f"Sys_Worker{w}"
+    dot.node(worker, f"🛠️ Sys Staff {w}")
+    dot.edge(sys_mgr, worker)
+
+# --- Learning Content Team ---
+content_mgr = "LC_Manager"
+dot.node(content_mgr, "🧑‍💼 Content Manager")
+dot.edge("Boss", content_mgr)
+
+for w in range(1, content_num_staff + 1):
+    worker = f"LC_Worker{w}"
+    dot.node(worker, f"🛠️ Content Staff {w}")
+    dot.edge(content_mgr, worker)
+
+# --- Render Org Chart ---
+st.subheader("📈 Org Chart")
+st.graphviz_chart(dot)
