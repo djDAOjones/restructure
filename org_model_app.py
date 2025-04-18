@@ -1,50 +1,69 @@
 import streamlit as st
 import math
-
-st.set_page_config(page_title="Org Restructure Model", layout="centered")
-
-st.title("🔧 Org Restructure Model")
-st.write("Model potential org structures by adjusting managers, worker ratios, or total headcount.")
-
-# --- Mode toggle ---
-mode = st.radio("Select mode:", ["Input managers + ratio", "Input target workers + ratio"])
-
-# --- Common input ---
-workers_per_manager = st.slider("Workers per Manager", min_value=2, max_value=10, value=5)
-
-# --- Fixed boss ---
-num_bosses = 1
-
-# --- Mode 1: Input number of managers ---
-if mode == "Input managers + ratio":
-    num_managers = st.slider("Number of Managers (Level 5)", min_value=1, max_value=4, value=2)
-    num_workers = num_managers * workers_per_manager
-
-# --- Mode 2: Input target workers, calculate needed managers ---
-else:
-    num_workers = st.slider("Target Total Workers (Level 2–4)", min_value=10, max_value=35, value=20)
-    num_managers = math.ceil(num_workers / workers_per_manager)
-
-# --- Total count ---
-total_employees = num_bosses + num_managers + num_workers
-
 import graphviz
 
+# --- PAGE SETUP ---
+st.set_page_config(page_title="Org Structure Model", layout="centered")
+st.title("🏗️ Org Restructure Model")
+st.write("Model your org structure by adjusting the number of workers or managers.")
+
+# --- INPUT MODE SELECTION ---
+input_mode = st.selectbox("What do you want to input?", ["Number of Managers", "Number of Workers"])
+workers_per_manager = st.slider("Workers per Manager", min_value=2, max_value=10, value=5)
+
+# --- DYNAMIC LOGIC BASED ON INPUT MODE ---
+if input_mode == "Number of Managers":
+    num_managers = st.slider("Number of Managers (Level 5)", min_value=1, max_value=4, value=2)
+    num_workers = num_managers * workers_per_manager
+else:
+    num_workers = st.slider("Target Number of Workers (Level 2–4)", min_value=10, max_value=35, value=20)
+    num_managers = math.ceil(num_workers / workers_per_manager)
+
+# --- STATIC VALUES ---
+num_bosses = 1
+total_employees = num_bosses + num_managers + num_workers
+
+# --- HEADCOUNT LIMIT ---
+max_headcount = st.number_input("Max Total Employees Allowed", value=40)
+
+if total_employees > max_headcount:
+    st.warning(f"⚠️ This structure exceeds your headcount limit of {max_headcount}!")
+else:
+    st.success(f"✅ Headcount is within the allowed limit.")
+
+# --- STRUCTURE OVERVIEW ---
+st.subheader("📊 Structure Summary")
+st.write(f"👑 Bosses (Level 6): {num_bosses}")
+st.write(f"🧑‍💼 Managers (Level 5): {num_managers}")
+st.write(f"🛠️ Workers (Level 2–4): {num_workers}")
+st.write(f"📋 Total Employees: **{total_employees}**")
+
+# --- WORKER LEVEL BREAKDOWN (OPTIONAL) ---
+st.subheader("📉 Worker Level Breakdown (Est. Split)")
+level_4 = int(num_workers * 0.4)
+level_3 = int(num_workers * 0.35)
+level_2 = num_workers - level_4 - level_3
+
+col1, col2, col3 = st.columns(3)
+col1.metric("Level 4", level_4)
+col2.metric("Level 3", level_3)
+col3.metric("Level 2", level_2)
+
+# --- ORG CHART VISUALISATION ---
 st.subheader("📈 Org Chart Preview")
 
-# Generate Graphviz dot code
-dot = graphviz.Digraph()
+dot = graphviz.Digraph(engine="dot")
 
-# Add boss node
-dot.node("Boss", "👑 Boss")
+# Boss node
+dot.node("Boss", "👑 Boss", shape="box")
 
-# Add manager nodes
+# Managers
 for m in range(num_managers):
     manager_id = f"Manager{m+1}"
     dot.node(manager_id, f"🧑‍💼 {manager_id}")
     dot.edge("Boss", manager_id)
 
-# Distribute workers across managers
+# Workers distributed across managers
 worker_id = 1
 for m in range(num_managers):
     manager_id = f"Manager{m+1}"
@@ -56,32 +75,5 @@ for m in range(num_managers):
         dot.edge(manager_id, worker_label)
         worker_id += 1
 
-# Display it
-st.graphviz_chart(dot)
-
-# --- Worker level breakdown ---
-st.subheader("🔢 Structure Breakdown")
-st.write(f"👑 Bosses (Level 6): {num_bosses}")
-st.write(f"🧑‍💼 Managers (Level 5): {num_managers}")
-st.write(f"🛠️ Workers (Levels 2–4): {num_workers}")
-st.write(f"📊 Total Employees: **{total_employees}**")
-
-# --- Breakdown of worker levels ---
-st.subheader("📉 Worker Level Breakdown (Estimated Split)")
-level_4 = int(num_workers * 0.4)
-level_3 = int(num_workers * 0.35)
-level_2 = num_workers - level_4 - level_3
-
-col1, col2, col3 = st.columns(3)
-col1.metric("Level 4", level_4)
-col2.metric("Level 3", level_3)
-col3.metric("Level 2", level_2)
-
-# --- Optional: Org Summary Table ---
-st.subheader("📋 Summary Table")
-st.table({
-    "Level": ["6 (Boss)", "5 (Manager)", "4", "3", "2"],
-    "Count": [num_bosses, num_managers, level_4, level_3, level_2]
-})
-
-# Optional stretch goal: Graphviz org chart rendering could go here
+# Display org chart with larger height
+st.graphviz_chart(dot, height=600)
