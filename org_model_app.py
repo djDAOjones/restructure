@@ -76,4 +76,4 @@ for m in range(num_managers):
 dot_string += "}\n"
 
 # Show chart (no height argument)
-st.graphviz_chart(dot_string)
+st.graphviz_chart(dot_string, height=800)
