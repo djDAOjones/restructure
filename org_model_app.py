@@ -1,88 +1,37 @@
 import streamlit as st
-import math
-
-st.set_page_config(page_title="Org Restructure Model", layout="centered")
-
-st.title("🔧 Org Restructure Model")
-st.write("Model potential org structures by adjusting managers, worker ratios, or total headcount.")
-
-# --- Mode toggle ---
-mode = st.radio("Select mode:", ["Input managers + ratio", "Input target workers + ratio"])
-
-# --- Common input ---
-workers_per_manager = st.slider("Workers per Manager", min_value=2, max_value=10, value=5)
-
-# --- Fixed boss ---
-num_bosses = 1
-
-# --- Mode 1: Input number of managers ---
-if mode == "Input managers + ratio":
-    num_managers = st.slider("Number of Managers (Level 5)", min_value=1, max_value=4, value=2)
-    num_workers = num_managers * workers_per_manager
-
-# --- Mode 2: Input target workers, calculate needed managers ---
-else:
-    num_workers = st.slider("Target Total Workers (Level 2–4)", min_value=10, max_value=35, value=20)
-    num_managers = math.ceil(num_workers / workers_per_manager)
-
-# --- Total count ---
-total_employees = num_bosses + num_managers + num_workers
-
 import graphviz
 
-st.subheader("📈 Org Chart Preview")
+st.set_page_config(page_title="Org Chart", layout="centered")
+st.title("🏗️ Org Chart Builder")
 
-# Generate Graphviz dot code
-dot = graphviz.Digraph(engine="circo")  # or "twopi", "circo"
+# --- Sliders for each team ---
+st.header("Learning Technologists Team")
+lt_num_managers = st.slider("Number of Co-Managers", 1, 4, 2)
+lt_num_staff = st.slider("Number of Staff (Learning Technologists)", 2, 20, 8)
 
+st.header("System Team")
+system_num_staff = st.slider("Number of System Workers", 1, 15, 5)
 
-# Add boss node
-dot.node("Boss", "👑 Boss")
+st.header("Learning Content Team")
+content_num_staff = st.slider("Number of Learning Content Workers", 1, 15, 6)
 
-# Add manager nodes
-for m in range(num_managers):
-    manager_id = f"Manager{m+1}"
-    dot.node(manager_id, f"🧑‍💼 {manager_id}")
-    dot.edge("Boss", manager_id)
+# --- Build Org Chart ---
+dot = graphviz.Digraph(engine="dot")
+dot.attr(ranksep="1.5", nodesep="1.0")
 
-# Distribute workers across managers
-worker_id = 1
-for m in range(num_managers):
-    manager_id = f"Manager{m+1}"
-    for _ in range(workers_per_manager):
-        if worker_id > num_workers:
-            break
-        worker_label = f"Worker{worker_id}"
-        dot.node(worker_label, f"🛠️ {worker_label}")
-        dot.edge(manager_id, worker_label)
-        worker_id += 1
+# Boss node
+dot.node("Boss", "👑 Boss", shape="box")
 
-# Display it
-st.graphviz_chart(dot)
+# --- Learning Technologists Team ---
+lt_lead = "LT_Lead"
+dot.node(lt_lead, "🧑‍💼 LT Manager")
+dot.edge("Boss", lt_lead)
 
-# --- Worker level breakdown ---
-st.subheader("🔢 Structure Breakdown")
-st.write(f"👑 Bosses (Level 6): {num_bosses}")
-st.write(f"🧑‍💼 Managers (Level 5): {num_managers}")
-st.write(f"🛠️ Workers (Levels 2–4): {num_workers}")
-st.write(f"📊 Total Employees: **{total_employees}**")
+for i in range(lt_num_managers - 1):
+    co_mgr = f"LT_Co{i+1}"
+    dot.node(co_mgr, f"🤝 LT Co-Mgr {i+1}")
+    dot.edge("Boss", co_mgr)
 
-# --- Breakdown of worker levels ---
-st.subheader("📉 Worker Level Breakdown (Estimated Split)")
-level_4 = int(num_workers * 0.4)
-level_3 = int(num_workers * 0.35)
-level_2 = num_workers - level_4 - level_3
-
-col1, col2, col3 = st.columns(3)
-col1.metric("Level 4", level_4)
-col2.metric("Level 3", level_3)
-col3.metric("Level 2", level_2)
-
-# --- Optional: Org Summary Table ---
-st.subheader("📋 Summary Table")
-st.table({
-    "Level": ["6 (Boss)", "5 (Manager)", "4", "3", "2"],
-    "Count": [num_bosses, num_managers, level_4, level_3, level_2]
-})
-
-# Optional stretch goal: Graphviz org chart rendering could go here
+for w in range(1, lt_num_staff + 1):
+    worker = f"LT_Worker{w}"
+    dot.node(worker, f"🛠
