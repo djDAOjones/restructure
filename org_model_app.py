@@ -4,6 +4,13 @@ import graphviz
 st.set_page_config(page_title="Org Chart", layout="centered")
 st.title("Restructure Chart")
 
+import pandas as pd
+
+# Load salary scale from Excel
+salary_file = "salary-scales-on-costs-pay-award-2025.3-apr.xlsx"
+df_clean = pd.read_excel(salary_file, sheet_name='Level 4-6 scale', skiprows=5)
+df_salaries = df_clean[['Point', 'Salary']].dropna().astype({'Point': int, 'Salary': int}).set_index('Point')
+
 # Salary data and cost multipliers
 SALARY_COSTS = {
     "Level 6": 109480,  # Director
