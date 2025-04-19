@@ -83,7 +83,8 @@ avg_worker_cost = round(SALARY_COSTS["Level 4"] * (seniority / 100) + SALARY_COS
 
 # --- Sliders for each team ---
 st.header("Faculty and School Support (FSS)")
-fss_num_managers = st.slider("Number of Managers (FSS)", 1, 4, 2)
+fss_mgr_default = int(1 + (3 * staff_scale / 100))
+fss_num_managers = st.slider("Number of Managers (FSS)", 1, 4, fss_mgr_default, key="fss_mgr_slider")
 fss_default = int(5 + (15 * staff_scale / 100))
 fss_num_staff = st.slider("Number of Staff (FSS)", 5, 20, fss_default, key="fss_slider")
 
