@@ -109,4 +109,17 @@ with chart_container:
     st.subheader(f"Total Estimated Cost: £{total_cost:,.0f}")
     st.graphviz_chart(dot)
 
-#
+# --- Staff Listing Table ---
+for row in staff_rows:
+    row["Salary"] = f"£{row['Salary']:,.0f}"
+
+if staff_rows:
+    st.subheader("Full Staff Listing")
+    df_table = pd.DataFrame([{
+        "role name": row["Role"],
+        "level": row["Level"],
+        "spline": row["Spine Point"],
+        "cost": row["Salary"]
+    } for row in staff_rows])
+
+    st.table(df_table)
