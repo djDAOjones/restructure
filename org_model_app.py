@@ -69,7 +69,7 @@ fss_mgr_nodes = []
 for i in range(fss_num_managers):
     mgr_id = f"FSS_Manager_{i+1}"
     salary, spine = get_salary(5, seniority)
-    dot.node(mgr_id, f"FSS Manager\nLevel 5-{spine:02}")
+    dot.node(mgr_id, f"FSS Manager\\nLevel 5-{spine:02}", color="blue")
     dot.edge("Boss", mgr_id)
     salary, spine = get_salary(5, seniority)
     staff_rows.append({"Role": "FSS Manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "1_FSS"})
@@ -77,7 +77,7 @@ for i in range(fss_num_managers):
 
 # Systems team
 salary, spine = get_salary(5, seniority)
-dot.node("Sys_Manager", f"Systems manager\nLevel 5-{spine:02}")
+dot.node("Sys_Manager", f"Systems manager\\nLevel 5-{spine:02}", color="red")
 dot.edge("Boss", "Sys_Manager")
 salary, spine = get_salary(5, seniority)
 staff_rows.append({"Role": "Systems manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "2_Systems"})
@@ -85,7 +85,7 @@ staff_rows.append({"Role": "Systems manager", "Level": 5, "Spine Point": spine, 
 # Content team manager (if shown separately)
 if show_content_as_team:
     salary, spine = get_salary(5, seniority)
-    dot.node("Content_Manager", f"Content manager\nLevel 5-{spine:02}")
+    dot.node("Content_Manager", f"Content manager\\nLevel 5-{spine:02}", color="green")
     dot.edge("Boss", "Content_Manager")
     salary, spine = get_salary(5, seniority)
     staff_rows.append({"Role": "Content manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "3_Content"})
@@ -114,7 +114,9 @@ def create_workers(team, count, parent_nodes):
             worker_counter += 1
             team_label = team.split('_')[1]
             role_label = f"{team_label} worker"
-            dot.node(role, f"{role_label}\nLevel {level}-{spine:02}")
+            color_map = {"FSS": "blue", "Systems": "red", "Content": "green"}
+            color = color_map.get(team_label, "black")
+            dot.node(role, f"{role_label}\\nLevel {level}-{spine:02}", color=color)
             parent = next(parent_nodes)
             dot.edge(parent, role)
             staff_rows.append({"Role": role_label, "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
