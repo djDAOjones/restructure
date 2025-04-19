@@ -33,23 +33,23 @@ def get_salary(level, seniority_pct):
     return df_salaries.get(spine_point, 0), spine_point
 
 # --- Controls ---
-st.markdown("<h2 style='font-size:2em;'>Controls</h2>", unsafe_allow_html=True)
+st.subheader("Controls")
 staff_scale = st.slider("Number of staff", 0, 100, 50, format="%d%%")
 seniority = st.slider("Seniority afforded", 0, 100, 100, format="%d%%")
 chart_container = st.container()
 
 # --- Team Config ---
-st.markdown("<h2 style='font-size:2em;'>Faculty and School Support (FSS)</h2>", unsafe_allow_html=True)
+st.subheader("Faculty and School Support (FSS)")
 fss_mgr_default = int(1 + (3 * staff_scale / 100))
 fss_num_managers = st.slider("Number of Managers (FSS)", 1, 4, fss_mgr_default, key="fss_mgr_slider")
 fss_default = int(5 + (15 * staff_scale / 100))
 fss_num_staff = st.slider("Number of Staff (FSS)", 5, 20, fss_default, key="fss_slider")
 
-st.markdown("<h2 style='font-size:2em;'>Learning Systems Team</h2>", unsafe_allow_html=True)
+st.subheader("Learning Systems Team")
 system_default = int(3 + (7 * staff_scale / 100))
 system_num_staff = st.slider("Number of Systems Workers", 3, 10, system_default, key="system_slider")
 
-st.markdown("<h2 style='font-size:2em;'>Learning Content Team</h2>", unsafe_allow_html=True)
+st.subheader("Learning Content Team")
 content_default = int(1 + (4 * staff_scale / 100))
 content_num_staff = st.slider("Number of Learning Content Workers", 1, 5, content_default, key="content_slider")
 
@@ -106,19 +106,7 @@ for level, proportion in allocations:
 # --- Chart Output ---
 total_cost = sum(row["Salary"] for row in staff_rows)
 with chart_container:
-    st.markdown(f"<h2 style='font-size:2em;'>💷 Total Estimated Cost: £{total_cost:,.0f}</h2>", unsafe_allow_html=True)
+    st.subheader(f"Total Estimated Cost: £{total_cost:,.0f}")
     st.graphviz_chart(dot)
 
-# --- Staff Listing Table ---
-for row in staff_rows:
-    row["Salary"] = f"£{row['Salary']:,.0f}"
-
-st.markdown("<h2 style='font-size:2em;'>Full Staff Listing</h2>", unsafe_allow_html=True)
-df_table = pd.DataFrame([{
-    "role name": row["Role"],
-    "level": row["Level"],
-    "spline": row["Spine Point"],
-    "cost": row["Salary"]
-} for row in staff_rows])
-
-st.table(df_table)
+#
