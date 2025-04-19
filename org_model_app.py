@@ -84,13 +84,16 @@ avg_worker_cost = round(SALARY_COSTS["Level 4"] * (seniority / 100) + SALARY_COS
 # --- Sliders for each team ---
 st.header("Faculty and School Support (FSS)")
 fss_num_managers = st.slider("Number of Managers (FSS)", 1, 4, 2)
-fss_num_staff = st.slider("Number of Staff (FSS)", 5, 20, int(5 + (15 * staff_scale / 100)))
+fss_default = int(5 + (15 * staff_scale / 100))
+fss_num_staff = st.slider("Number of Staff (FSS)", 5, 20, fss_default, key="fss_slider")
 
 st.header("Learning Systems Team")
-system_num_staff = st.slider("Number of Systems Workers", 3, 10, int(3 + (7 * staff_scale / 100)))
+system_default = int(3 + (7 * staff_scale / 100))
+system_num_staff = st.slider("Number of Systems Workers", 3, 10, system_default, key="system_slider")
 
 st.header("Learning Content Team")
-content_num_staff = st.slider("Number of Learning Content Workers", 1, 5, int(1 + (4 * staff_scale / 100)))
+content_default = int(1 + (4 * staff_scale / 100))
+content_num_staff = st.slider("Number of Learning Content Workers", 1, 5, content_default, key="content_slider")
 
 # --- Build Org Chart ---
 dot = graphviz.Digraph(engine="circo")

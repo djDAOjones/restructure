@@ -4,6 +4,53 @@ import graphviz
 st.set_page_config(page_title="Org Chart", layout="centered")
 st.title("Restructure Chart")
 
+# Predefined salary spine values (based on Excel data)
+df_salaries = {
+    13: 32000,
+    14: 33000,
+    15: 33500,
+    16: 34000,
+    17: 35000,
+    18: 36000,
+    19: 37000,
+    20: 38000,
+    21: 39000,
+    22: 40000,
+    23: 41000,
+    24: 42000,
+    25: 44000,
+    26: 45000,
+    27: 46000,
+    28: 47000,
+    29: 48000,
+    30: 50000,
+    31: 51000,
+    32: 52000,
+    33: 54000,
+    34: 55000,
+    35: 57000,
+    36: 58000,
+    37: 60000,
+    38: 62000,
+    39: 63000,
+    40: 65000,
+    41: 67000,
+    42: 69000,
+    43: 71000,
+    44: 73000,
+    45: 75000,
+    46: 77000,
+    47: 80000,
+    48: 82000,
+    49: 84000,
+    50: 86000,
+    51: 89000,
+    52: 91000,
+    53: 94000,
+    54: 97000,
+    55: 100000
+}
+
 # Salary data and cost multipliers
 SALARY_COSTS = {
     "Level 6": 109480,  # Director
@@ -11,11 +58,7 @@ SALARY_COSTS = {
     "Level 4": 55747    # Workers (senior)
 }
 
-# Seniority adjustment slider
-seniority = st.slider("Global Staff Seniority (%)", 0, 100, 100)
 
-# Estimate average worker cost based on seniority percentage
-avg_worker_cost = round(SALARY_COSTS["Level 4"] * (seniority / 100) + SALARY_COSTS["Level 4"] * 0.7 * ((100 - seniority) / 100))
 
 # Placeholder for cost calculation
 costs = {
@@ -28,19 +71,26 @@ costs = {
     "Content Workers": 0
 }
 
+# --- Global staffing level control ---
+staff_scale = st.slider("Global Staffing Level (%)", 0, 100, 50, format="%d%%")
+seniority = st.slider("Global Staff Seniority (% with full senior staff)", 0, 100, 100, format="%d%%")
+
 # Reserve chart space early
 chart_container = st.container()
 
+# Estimate average worker cost based on seniority percentage
+avg_worker_cost = round(SALARY_COSTS["Level 4"] * (seniority / 100) + SALARY_COSTS["Level 4"] * 0.7 * ((100 - seniority) / 100))
+
 # --- Sliders for each team ---
 st.header("Faculty and School Support (FSS)")
-fss_num_managers = st.slider("Number of Co-Managers (FSS)", 1, 4, 2)
-fss_num_staff = st.slider("Number of Staff (FSS)", 5, 20, 8)
+fss_num_managers = st.slider("Number of Managers (FSS)", 1, 4, 2)
+fss_num_staff = st.slider("Number of Staff (FSS)", 5, 20, int(5 + (15 * staff_scale / 100)))
 
 st.header("Learning Systems Team")
-system_num_staff = st.slider("Number of Systems Workers", 3, 10, 5)
+system_num_staff = st.slider("Number of Systems Workers", 3, 10, int(3 + (7 * staff_scale / 100)))
 
 st.header("Learning Content Team")
-content_num_staff = st.slider("Number of Learning Content Workers", 1, 5, 3)
+content_num_staff = st.slider("Number of Learning Content Workers", 1, 5, int(1 + (4 * staff_scale / 100)))
 
 # --- Build Org Chart ---
 dot = graphviz.Digraph(engine="circo")
@@ -77,11 +127,9 @@ for w in range(1, content_num_staff + 1):
     dot.edge(content_mgr, worker)
 
 # --- Calculate costs ---
-costs["FSS Managers"] = fss_num_managers * SALARY_COSTS["Level 5"]
 costs["FSS Workers"] = fss_num_staff * avg_worker_cost
 costs["System Workers"] = system_num_staff * avg_worker_cost
 costs["Content Workers"] = content_num_staff * avg_worker_cost
-
 total_cost = sum(costs.values())
 
 # --- Render chart at the top ---
@@ -110,19 +158,56 @@ staff_rows.append({"Role": "Systems Manager", "Level": 5, "Spine Point": 44, "Sa
 staff_rows.append({"Role": "Content Manager", "Level": 5, "Spine Point": 44, "Salary": 66460, "Org Cost": SALARY_COSTS["Level 5"]})
 
 # Workers at lower seniority
-def calc_worker_salary(seniority_pct):
-    max_salary = SALARY_COSTS["Level 4"]
-    min_salary = SALARY_COSTS["Level 4"] * 0.7
-    return round(min_salary + (max_salary - min_salary) * (seniority_pct / 100))
+import math
 
-worker_salary = calc_worker_salary(seniority)
-worker_point = int(24 + (10 * (seniority / 100)))
+def calc_worker_allocation(seniority_pct):
+    if seniority_pct == 0:
+        return [(4, 0.25), (3, 0.5), (2, 0.25)]
+    else:
+        return [(4, 1.0)]
 
-for i in range(fss_num_staff):
-    staff_rows.append({"Role": "FSS Staff", "Level": 4, "Spine Point": worker_point, "Salary": worker_salary, "Org Cost": worker_salary})
-for i in range(system_num_staff):
-    staff_rows.append({"Role": "Systems Staff", "Level": 4, "Spine Point": worker_point, "Salary": worker_salary, "Org Cost": worker_salary})
-for i in range(content_num_staff):
-    staff_rows.append({"Role": "Content Staff", "Level": 4, "Spine Point": worker_point, "Salary": worker_salary, "Org Cost": worker_salary})
+def calc_worker_salary(level):
+    if level == 4:
+        return df_salaries[23]
+    elif level == 3:
+        return df_salaries[18]
+    elif level == 2:
+        return round(SALARY_COSTS["Level 4"] * 0.4)
+
+allocations = calc_worker_allocation(seniority)
+
+# FSS workers
+for level, proportion in allocations:
+    count = math.ceil(fss_num_staff * proportion)
+    for i in range(count):
+        salary = calc_worker_salary(level)
+        label = f"FSS Staff {level}-{i+1}"
+        dot.node(label, f"FSS Staff\nLevel {level}")
+        dot.edge(fss_lead, label)
+        staff_rows.append({"Role": "FSS Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary})
+
+# Systems workers
+for level, proportion in allocations:
+    count = math.ceil(system_num_staff * proportion)
+    for i in range(count):
+        salary = calc_worker_salary(level)
+        label = f"Sys_Staff_{level}_{i+1}"
+        dot.node(label, f"Systems Staff\nLevel {level}")
+        dot.edge(sys_mgr, label)
+        staff_rows.append({"Role": "Systems Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary})
+
+# Content workers
+for level, proportion in allocations:
+    count = math.ceil(content_num_staff * proportion)
+    for i in range(count):
+        salary = calc_worker_salary(level)
+        label = f"Cont_Staff_{level}_{i+1}"
+        dot.node(label, f"Content Staff\nLevel {level}")
+        dot.edge(content_mgr, label)
+        staff_rows.append({"Role": "Content Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary})
+
+for row in staff_rows:
+    row["Salary"] = f"£{row['Salary']:,.0f}"
+    row["Org Cost"] = f"£{row['Org Cost']:,.0f}"
 
 st.dataframe(staff_rows)
