@@ -134,8 +134,7 @@ for level, proportion in allocations:
     for i in range(count):
         salary = calc_worker_salary(level)
         label = f"FSS Staff {level}-{i+1}"
-        dot.node(label, f"FSS Staff
-Level {level}")
+        dot.node(label, f"FSS Staff\\nLevel {level}")
         dot.edge(fss_lead, label)
         staff_rows.append({"Role": "FSS Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary})
 
@@ -145,8 +144,7 @@ for level, proportion in allocations:
     for i in range(count):
         salary = calc_worker_salary(level)
         label = f"Sys_Staff_{level}_{i+1}"
-        dot.node(label, f"Systems Staff
-Level {level}")
+        dot.node(label, f"Systems Staff\\nLevel {level}")
         dot.edge(sys_mgr, label)
         staff_rows.append({"Role": "Systems Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary})
 
@@ -156,10 +154,9 @@ for level, proportion in allocations:
     for i in range(count):
         salary = calc_worker_salary(level)
         label = f"Cont_Staff_{level}_{i+1}"
-        dot.node(label, f"Content Staff
-Level {level}")
+        dot.node(label, f"Content Staff\\nLevel {level}")
         dot.edge(content_mgr, label)
-        staff_rows.append({"Role": "Content Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary})int(24 + (10 * (seniority / 100)))
+        staff_rows.append({"Role": "Content Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary})# Removed duplicate and invalid line
 
 for i in range(fss_num_staff):
     staff_rows.append({"Role": "FSS Staff", "Level": 4, "Spine Point": worker_point, "Salary": worker_salary, "Org Cost": worker_salary})
