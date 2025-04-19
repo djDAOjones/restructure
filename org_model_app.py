@@ -132,10 +132,7 @@ for w in range(1, content_num_staff + 1):
 
 
 
-# --- Render chart at the top ---
-with chart_container:
-    st.markdown(f"### 💷 Total Estimated Cost: £{total_cost:,.0f}")
-    st.graphviz_chart(dot)
+
 
 # --- Team cost breakdown ---
 st.markdown("### Cost Breakdown by Team")
@@ -211,6 +208,11 @@ costs["FSS Workers"] = sum(int(row["Org Cost"].replace("£", "").replace(",", ""
 costs["System Workers"] = sum(int(row["Org Cost"].replace("£", "").replace(",", "")) for row in staff_rows if row["Role"] == "Systems Staff")
 costs["Content Workers"] = sum(int(row["Org Cost"].replace("£", "").replace(",", "")) for row in staff_rows if row["Role"] == "Content Staff")
 total_cost = sum(costs.values())
+
+# --- Render chart at the top ---
+with chart_container:
+    st.markdown(f"### 💷 Total Estimated Cost: £{total_cost:,.0f}")
+    st.graphviz_chart(dot)
 
 for row in staff_rows:
     row["Salary"] = f"£{row['Salary']:,.0f}"
