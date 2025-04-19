@@ -45,13 +45,14 @@ def get_salary(level, seniority_pct):
     spine_point = spine_range[index]
     return df_salaries.get(spine_point, 0), spine_point
 
-# --- Sliders with Display Scaling Only ---
-def scale_label(value, min_display):
-    return f"{min_display + round((100 - min_display) * value / 100)}%"
+# --- Sliders with Custom Display Text ---
+staff_scale_slider = st.slider("Number of staff (UI: 29% to 100%)", 0, 100, 50)
+staff_scale_label = 29 + round((100 - 29) * staff_scale_slider / 100)
 
-staff_scale_slider = st.slider("Number of staff", 0, 100, 50, format_func=lambda x: scale_label(x, 29))
-seniority_slider = st.slider("Seniority afforded", 0, 100, 100, format_func=lambda x: scale_label(x, 76))
+seniority_slider = st.slider("Seniority afforded (UI: 76% to 100%)", 0, 100, 100)
+seniority_label = 76 + round((100 - 76) * seniority_slider / 100)
 
+# Keep values used in logic unchanged:
 staff_scale = staff_scale_slider
 seniority = seniority_slider
 
