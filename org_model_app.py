@@ -162,14 +162,7 @@ for level, proportion in allocations:
         label = f"Cont_Staff_{level}_{i+1}"
         dot.node(label, f"Content Staff\nLevel {level}")
         dot.edge(content_mgr, label)
-        staff_rows.append({"Role": "Content Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary})# Removed duplicate and invalid line
-
-for i in range(fss_num_staff):
-    staff_rows.append({"Role": "FSS Staff", "Level": 4, "Spine Point": worker_point, "Salary": worker_salary, "Org Cost": worker_salary})
-for i in range(system_num_staff):
-    staff_rows.append({"Role": "Systems Staff", "Level": 4, "Spine Point": worker_point, "Salary": worker_salary, "Org Cost": worker_salary})
-for i in range(content_num_staff):
-    staff_rows.append({"Role": "Content Staff", "Level": 4, "Spine Point": worker_point, "Salary": worker_salary, "Org Cost": worker_salary})
+        staff_rows.append({"Role": "Content Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary}))
 
 for row in staff_rows:
     row["Salary"] = f"£{row['Salary']:,.0f}"
