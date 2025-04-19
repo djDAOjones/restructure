@@ -72,10 +72,6 @@ costs = {
 }
 
 # --- Global staffing level control ---
-staff_scale = st.slider("Global Staffing Level (%)", 0, 100, 50, format="%d%%")
-
-# Seniority adjustment slider
-seniority = st.slider("Global Staff Seniority (% with full senior staff)", 0, 100, 100, format="%d%%")
 
 # Reserve chart space early
 chart_container = st.container()
