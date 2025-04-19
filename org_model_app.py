@@ -31,16 +31,19 @@ costs = {
 # Reserve chart space early
 chart_container = st.container()
 
+# --- Global staffing level control ---
+staff_scale = st.slider("Global Staffing Level", 0, 100, 50)
+
 # --- Sliders for each team ---
 st.header("Faculty and School Support (FSS)")
 fss_num_managers = st.slider("Number of Managers (FSS)", 1, 4, 2)
-fss_num_staff = st.slider("Number of Staff (FSS)", 5, 20, 8)
+fss_num_staff = st.slider("Number of Staff (FSS)", 5, 20, int(5 + (15 * staff_scale / 100)))
 
 st.header("Learning Systems Team")
-system_num_staff = st.slider("Number of Systems Workers", 3, 10, 5)
+system_num_staff = st.slider("Number of Systems Workers", 3, 10, int(3 + (7 * staff_scale / 100)))
 
 st.header("Learning Content Team")
-content_num_staff = st.slider("Number of Learning Content Workers", 1, 5, 3)
+content_num_staff = st.slider("Number of Learning Content Workers", 1, 5, int(1 + (4 * staff_scale / 100)))
 
 # --- Build Org Chart ---
 dot = graphviz.Digraph(engine="circo")
