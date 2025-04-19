@@ -63,7 +63,7 @@ fss_num_staff = st.slider("FSS workers", 5, 19, fss_default, key="fss_slider")
 system_default = int(3 + (7 * staff_scale / 100))
 system_num_staff = st.slider("Systems team workers", 3, 10, system_default, key="system_slider")
 
-content_default = int(1 + (4 * staff_scale / 100))
+content_default = min(3, int(1 + (4 * staff_scale / 100)))
 content_num_staff = st.slider("Learning content workers", 1, 3, content_default, key="content_slider")
 
 # --- Org Chart ---
