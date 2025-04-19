@@ -130,11 +130,7 @@ for w in range(1, content_num_staff + 1):
     dot.node(worker, f"Content Staff {w}")
     dot.edge(content_mgr, worker)
 
-# --- Calculate costs ---
-costs["FSS Workers"] = sum(int(row["Org Cost"].replace("£", "").replace(",", "")) for row in staff_rows if row["Role"] == "FSS Staff")
-costs["System Workers"] = sum(int(row["Org Cost"].replace("£", "").replace(",", "")) for row in staff_rows if row["Role"] == "Systems Staff")
-costs["Content Workers"] = sum(int(row["Org Cost"].replace("£", "").replace(",", "")) for row in staff_rows if row["Role"] == "Content Staff")
-total_cost = sum(costs.values())
+
 
 # --- Render chart at the top ---
 with chart_container:
@@ -209,6 +205,12 @@ for level, proportion in allocations:
         dot.node(label, f"Content Staff\nLevel {level}")
         dot.edge(content_mgr, label)
         staff_rows.append({"Role": "Content Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary})
+
+# --- Calculate costs ---
+costs["FSS Workers"] = sum(int(row["Org Cost"].replace("£", "").replace(",", "")) for row in staff_rows if row["Role"] == "FSS Staff")
+costs["System Workers"] = sum(int(row["Org Cost"].replace("£", "").replace(",", "")) for row in staff_rows if row["Role"] == "Systems Staff")
+costs["Content Workers"] = sum(int(row["Org Cost"].replace("£", "").replace(",", "")) for row in staff_rows if row["Role"] == "Content Staff")
+total_cost = sum(costs.values())
 
 for row in staff_rows:
     row["Salary"] = f"£{row['Salary']:,.0f}"
