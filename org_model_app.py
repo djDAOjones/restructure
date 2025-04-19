@@ -59,7 +59,7 @@ st.markdown("<p style='font-size:0.9em; font-weight:600;'>Faculty and School Sup
 fss_mgr_default = int(1 + (3 * staff_scale / 100))
 fss_num_managers = st.slider("Number of Managers (FSS)", 1, 4, fss_mgr_default, key="fss_mgr_slider")
 fss_default = int(5 + (15 * staff_scale / 100))
-fss_num_staff = st.slider("Number of Staff (FSS)", 5, 20, fss_default, key="fss_slider")
+fss_num_staff = st.slider("Number of Staff (FSS)", 5, 19, fss_default, key="fss_slider")
 
 st.markdown("<p style='font-size:0.9em; font-weight:600;'>Learning Systems Team</p>", unsafe_allow_html=True)
 system_default = int(3 + (7 * staff_scale / 100))
@@ -67,7 +67,7 @@ system_num_staff = st.slider("Number of Systems Workers", 3, 10, system_default,
 
 st.markdown("<p style='font-size:0.9em; font-weight:600;'>Learning Content Team</p>", unsafe_allow_html=True)
 content_default = int(1 + (4 * staff_scale / 100))
-content_num_staff = st.slider("Number of Learning Content Workers", 1, 5, content_default, key="content_slider")
+content_num_staff = st.slider("Number of Learning Content Workers", 1, 3, content_default, key="content_slider")
 
 # --- Org Chart ---
 dot = graphviz.Digraph(engine="circo")
