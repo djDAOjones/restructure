@@ -40,16 +40,17 @@ staff_scale = (staff_scale_input - 29) * (100 / (100 - 29))
 seniority_input = st.slider("Seniority afforded", 76, 100, 100, format="%d%%")
 seniority = (seniority_input - 76) * (100 / (100 - 76))
 
-max_workers_per_mgr = st.slider("Max workers per FSS manager", 5, 10, 8)
+workers_per_mgr = st.slider("Workers per FSS manager", 5, 10, 8)
 show_content_as_team = st.checkbox("Show Learning Content as Separate Team", value=True)
 
 chart_container = st.container()
 
 # --- Team Counts ---
-fss_num_managers = int(1 + (3 * staff_scale / 100))
 fss_num_staff = int(5 + (15 * staff_scale / 100))
 system_num_staff = int(3 + (7 * staff_scale / 100))
 content_num_staff = min(3, int(1 + (4 * staff_scale / 100)))
+total_fss_workers = fss_num_staff + (0 if show_content_as_team else content_num_staff)
+fss_num_managers = max(1, round(total_fss_workers / workers_per_mgr))
 
 # --- Org Chart ---
 dot = graphviz.Digraph(engine="circo")
