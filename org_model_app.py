@@ -11,11 +11,8 @@ SALARY_COSTS = {
     "Level 4": 55747    # Workers (senior)
 }
 
-# --- Global staffing level control ---
-staff_scale = st.slider("Global Staffing Level", 0, 100, 50)
-
 # Seniority adjustment slider
-seniority = st.slider("Global Staff Seniority (% with full senior staff)", 0, 100, 100)
+seniority = st.slider("Global Staff Seniority (% with full senior staff)", 0, 100, 100, format="%d%%")
 
 # Estimate average worker cost based on seniority percentage
 avg_worker_cost = round(SALARY_COSTS["Level 4"] * (seniority / 100) + SALARY_COSTS["Level 4"] * 0.7 * ((100 - seniority) / 100))
@@ -33,6 +30,9 @@ costs = {
 
 # Reserve chart space early
 chart_container = st.container()
+
+# --- Global staffing level control ---
+staff_scale = st.slider("Global Staffing Level (%)", 0, 100, 50, format="%d%%")
 
 # --- Sliders for each team ---
 st.header("Faculty and School Support (FSS)")
