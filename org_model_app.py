@@ -75,15 +75,15 @@ dot.edge("Boss", content_mgr)
 staff_rows = []
 
 salary, spine = get_salary(6, seniority)
-staff_rows.append({"Role": "Director", "Level": 6, "Spine Point": spine, "Salary": salary, "Team": "Director"})
+staff_rows.append({"Role": "Director", "Level": 6, "Spine Point": spine, "Salary": salary, "Team": "0_Director"})
 
 for i in range(fss_num_managers):
     salary, spine = get_salary(5, seniority)
-    staff_rows.append({"Role": "FSS Manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "FSS"})
+    staff_rows.append({"Role": "FSS Manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "1_FSS"})
 
 for role in ["Systems Manager", "Content Manager"]:
     salary, spine = get_salary(5, seniority)
-    team = "Systems" if "Systems" in role else "Content"
+    team = "2_Systems" if "Systems" in role else "3_Content"
     staff_rows.append({"Role": role, "Level": 5, "Spine Point": spine, "Salary": salary, "Team": team})
 
 def calc_worker_allocation(seniority_pct):
@@ -98,16 +98,17 @@ allocations = calc_worker_allocation(seniority)
 
 for level, proportion in allocations:
     for team, parent, count in [
-        ("FSS", fss_lead, fss_num_staff),
-        ("Systems", sys_mgr, system_num_staff),
-        ("Content", content_mgr, content_num_staff)
+        ("1_FSS", fss_lead, fss_num_staff),
+        ("2_Systems", sys_mgr, system_num_staff),
+        ("3_Content", content_mgr, content_num_staff)
     ]:
         for i in range(math.ceil(count * proportion)):
             salary, spine = get_salary(level, seniority)
             label = f"{team}_Staff_{level}_{i+1}"
-            dot.node(label, f"{team} Staff\nLevel {level}")
+            team_name = team.split('_')[1]
+            dot.node(label, f"{team_name} Staff\nLevel {level}")
             dot.edge(parent, label)
-            staff_rows.append({"Role": f"{team} Staff", "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
+            staff_rows.append({"Role": f"{team_name} Staff", "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
 
 # --- Chart Output ---
 total_cost = sum(row["Salary"] for row in staff_rows)
@@ -123,4 +124,12 @@ if staff_rows:
     st.markdown("<p style='font-size:0.9em; font-weight:600;'>Full Staff Listing</p>", unsafe_allow_html=True)
     df_table = pd.DataFrame([{
         "role name": row["Role"],
-        "team": row["Team
+        "team": row["Team"],
+        "level": row["Level"],
+        "spline": row["Spine Point"],
+        "cost": row["Salary"]
+    } for row in staff_rows])
+
+    df_table.sort_values(by=["team", "role name", "level", "spline"], inplace=True)
+    df_table.drop(columns=["team"], inplace=True)
+    st.table(df_table)
