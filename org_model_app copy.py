@@ -24,6 +24,19 @@ SPINE_RANGES = {
     6: list(range(54, 58))
 }
 
+COLOR_LOW = (16, 38, 59)
+COLOR_HIGH = (249, 129, 9)
+
+def interpolate_color(level, spine):
+    spine_range = SPINE_RANGES.get(level)
+    if not spine_range:
+        return "#999999"
+    t = (spine - spine_range[0]) / (spine_range[-1] - spine_range[0])
+    r = int(COLOR_LOW[0] + (COLOR_HIGH[0] - COLOR_LOW[0]) * t)
+    g = int(COLOR_LOW[1] + (COLOR_HIGH[1] - COLOR_LOW[1]) * t)
+    b = int(COLOR_LOW[2] + (COLOR_HIGH[2] - COLOR_LOW[2]) * t)
+    return f"#{r:02X}{g:02X}{b:02X}"
+
 def get_salary(level, seniority_pct):
     if level not in SPINE_RANGES:
         return 0, 0
@@ -32,10 +45,9 @@ def get_salary(level, seniority_pct):
     spine_point = spine_range[index]
     return df_salaries.get(spine_point, 0), spine_point
 
-# --- Controls ---
-st.markdown("<p style='font-size:0.9em; font-weight:600;'>Controls</p>", unsafe_allow_html=True)
-staff_scale = st.slider("Number of staff", 0, 100, 50, format="%d%%")
-seniority = st.slider("Seniority afforded", 0, 100, 100, format="%d%%")
+# --- Sliders ---
+staff_scale = st.slider("Number of staff", 0, 100, 50, format="%d%%", label_visibility="visible", format_func=lambda x: f"{29 + int((100 - 29) * x / 100)}%")
+seniority = st.slider("Seniority afforded", 0, 100, 100, format="%d%%", label_visibility="visible", format_func=lambda x: f"{76 + int((100 - 76) * x / 100)}%")
 chart_container = st.container()
 
 # --- Team Config ---
@@ -56,19 +68,19 @@ content_num_staff = st.slider("Number of Learning Content Workers", 1, 5, conten
 # --- Org Chart ---
 dot = graphviz.Digraph(engine="circo")
 dot.attr(ranksep="1.5", nodesep="1.0")
-dot.node("Boss", "Director", shape="box")
+dot.node("Boss", "Director", shape="box", color=interpolate_color(6, SPINE_RANGES[6][-1]))
 
 fss_lead = "FSS_Lead"
 fss_label = " / ".join(["FSS Manager"] * fss_num_managers)
-dot.node(fss_lead, fss_label)
+dot.node(fss_lead, fss_label, color=interpolate_color(5, SPINE_RANGES[5][-1]))
 dot.edge("Boss", fss_lead)
 
 sys_mgr = "Sys_Manager"
-dot.node(sys_mgr, "Systems Manager")
+dot.node(sys_mgr, "Systems Manager", color=interpolate_color(5, SPINE_RANGES[5][-1]))
 dot.edge("Boss", sys_mgr)
 
 content_mgr = "LC_Manager"
-dot.node(content_mgr, "Content Manager")
+dot.node(content_mgr, "Content Manager", color=interpolate_color(5, SPINE_RANGES[5][-1]))
 dot.edge("Boss", content_mgr)
 
 # --- Staffing Table Generation ---
@@ -106,8 +118,9 @@ for level, proportion in allocations:
             salary, spine = get_salary(level, seniority)
             label = f"{team}_Staff_{level}_{i+1}"
             team_name = team.split('_')[1]
-            dot.node(label, f"{team_name} Staff\nLevel {level}")
-            dot.edge(parent, label)
+            color = interpolate_color(level, spine)
+            dot.node(label, f"{team_name} Staff\nLevel {level}", color=color)
+            dot.edge(parent, label, color=color)
             staff_rows.append({"Role": f"{team_name} Staff", "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
 
 # --- Chart Output ---
