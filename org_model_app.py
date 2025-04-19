@@ -55,19 +55,16 @@ seniority = (seniority_input - 76) * (100 / (100 - 76))
 chart_container = st.container()
 
 # --- Team Config ---
-st.markdown("<p style='font-size:0.9em; font-weight:600;'>Faculty and School Support (FSS)</p>", unsafe_allow_html=True)
 fss_mgr_default = int(1 + (3 * staff_scale / 100))
 fss_num_managers = st.slider("FSS managers", 1, 4, fss_mgr_default, key="fss_mgr_slider")
 fss_default = int(5 + (15 * staff_scale / 100))
-fss_num_staff = st.slider("FSS non-managerial workers", 5, 19, fss_default, key="fss_slider")
+fss_num_staff = st.slider("FSS workers", 5, 19, fss_default, key="fss_slider")
 
-st.markdown("<p style='font-size:0.9em; font-weight:600;'>Learning Systems Team</p>", unsafe_allow_html=True)
 system_default = int(3 + (7 * staff_scale / 100))
 system_num_staff = st.slider("Systems team workers", 3, 10, system_default, key="system_slider")
 
-st.markdown("<p style='font-size:0.9em; font-weight:600;'>Learning Content Team</p>", unsafe_allow_html=True)
 content_default = int(1 + (4 * staff_scale / 100))
-content_num_staff = st.slider("Number of Learning Content Workers", 1, 3, content_default, key="content_slider")
+content_num_staff = st.slider("Learning content workers", 1, 3, content_default, key="content_slider")
 
 # --- Org Chart ---
 dot = graphviz.Digraph(engine="circo")
@@ -80,7 +77,7 @@ dot.node(fss_lead, fss_label, color=interpolate_color(5, SPINE_RANGES[5][-1]))
 dot.edge("Boss", fss_lead)
 
 sys_mgr = "Sys_Manager"
-dot.node(sys_mgr, "Systems Manager", color=interpolate_color(5, SPINE_RANGES[5][-1]))
+dot.node(sys_mgr, "Systems manager", color=interpolate_color(5, SPINE_RANGES[5][-1]))
 dot.edge("Boss", sys_mgr)
 
 content_mgr = "LC_Manager"
@@ -100,7 +97,8 @@ for i in range(fss_num_managers):
 for role in ["Systems Manager", "Content Manager"]:
     salary, spine = get_salary(5, seniority)
     team = "2_Systems" if "Systems" in role else "3_Content"
-    staff_rows.append({"Role": role, "Level": 5, "Spine Point": spine, "Salary": salary, "Team": team})
+    role_name = "Systems manager" if team == "2_Systems" else "Content Manager"
+    staff_rows.append({"Role": role_name, "Level": 5, "Spine Point": spine, "Salary": salary, "Team": team})
 
 def calc_worker_allocation(seniority_pct):
     low_mix = {4: 0.25, 3: 0.5, 2: 0.25}
@@ -123,9 +121,15 @@ for level, proportion in allocations:
             label = f"{team}_Staff_{level}_{i+1}"
             team_name = team.split('_')[1]
             color = interpolate_color(level, spine)
-            dot.node(label, f"{team_name} Staff\nLevel {level}", color=color)
+            if team_name == "FSS":
+                role_label = "FSS worker"
+            elif team_name == "Systems":
+                role_label = "Systems worker"
+            else:
+                role_label = "Content worker"
+            dot.node(label, f"{role_label}\nLevel {level}", color=color)
             dot.edge(parent, label, color=color)
-            staff_rows.append({"Role": f"{team_name} Staff", "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
+            staff_rows.append({"Role": role_label, "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
 
 # --- Chart Output ---
 total_cost = sum(row["Salary"] for row in staff_rows)
