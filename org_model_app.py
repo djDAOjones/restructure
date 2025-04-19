@@ -86,7 +86,6 @@ for role in ["Systems Manager", "Content Manager"]:
     staff_rows.append({"Role": role, "Level": 5, "Spine Point": spine, "Salary": salary})
 
 def calc_worker_allocation(seniority_pct):
-    # Smoothly interpolate from low-seniority mix to high-seniority concentration
     low_mix = {4: 0.25, 3: 0.5, 2: 0.25}
     high_mix = {4: 1.0, 3: 0.0, 2: 0.0}
     mix = {}
@@ -122,15 +121,13 @@ for row in staff_rows:
 if staff_rows:
     st.markdown("<p style='font-size:0.9em; font-weight:600;'>Full Staff Listing</p>", unsafe_allow_html=True)
     df_table = pd.DataFrame([{
-    "role name": row["Role"],
-    "level": row["Level"],
-    "spline": row["Spine Point"],
-    "cost": row["Salary"]
-} for row in staff_rows])
+        "role name": row["Role"],
+        "level": row["Level"],
+        "spline": row["Spine Point"],
+        "cost": row["Salary"]
+    } for row in staff_rows])
 
-# Sort by team (from role), then role, then level, then spline
-df_table["team"] = df_table["role name"].apply(lambda r: r.split()[0] if " " in r else r)
-df_table.sort_values(by=["team", "role name", "level", "spline"], inplace=True, ascending=[True, True, True, True])
-df_table.drop(columns=["team"], inplace=True)
-
+    df_table["team"] = df_table["role name"].apply(lambda r: r.split()[0] if " " in r else r)
+    df_table.sort_values(by=["team", "role name", "level", "spline"], inplace=True, ascending=[True, True, True, True])
+    df_table.drop(columns=["team"], inplace=True)
     st.table(df_table)
