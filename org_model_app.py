@@ -134,12 +134,7 @@ for w in range(1, content_num_staff + 1):
 
 
 
-# --- Team cost breakdown ---
-st.markdown("### Cost Breakdown by Team")
-st.table({
-    "Team": list(costs.keys()),
-    "Estimated Cost (£)": [f"£{v:,.0f}" for v in costs.values()]
-})
+
 
 # --- Detailed staff listing ---
 st.markdown("### Full Staff Listing")
