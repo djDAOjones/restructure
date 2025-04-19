@@ -160,9 +160,14 @@ def calc_worker_allocation(seniority_pct):
 
 def calc_worker_salary(level):
     if level == 4:
-        return df_salaries[23]
+        base = df_salaries[23]
     elif level == 3:
-        return df_salaries[18]
+        base = df_salaries[18]
+    elif level == 2:
+        base = round(SALARY_COSTS["Level 4"] * 0.4)
+    else:
+        base = 0
+    return int(round(base * 1.3 / 500) * 500)
     elif level == 2:
         return round(SALARY_COSTS["Level 4"] * 0.4)
 
