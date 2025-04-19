@@ -128,6 +128,6 @@ if staff_rows:
     } for row in staff_rows])
 
     df_table["team"] = df_table["role name"].apply(lambda r: r.split()[0] if " " in r else r)
-    df_table.sort_values(by=["team", "role name", "level", "spline"], inplace=True, ascending=[True, True, True, True])
+    df_table.sort_values(by=["role name", "team", "level", "spline"], inplace=True, ascending=[True, True, True, True])
     df_table.drop(columns=["team"], inplace=True)
-    st.table(df_table)
+    st.dataframe(df_table, use_container_width=True, hide_index=True)
