@@ -55,7 +55,8 @@ fss_num_managers = max(1, round(total_fss_workers / workers_per_mgr))
 # --- Org Chart ---
 dot = graphviz.Digraph(engine="circo")
 dot.attr(ranksep="1.5", nodesep="1.0")
-dot.node("Boss", "Director", shape="box")
+dot.node("Boss", f"Director
+Level 6-{spine:02}", shape="box")
 
 # --- Staffing Table Generation ---
 staff_rows = []
@@ -67,21 +68,24 @@ staff_rows.append({"Role": "Director", "Level": 6, "Spine Point": spine, "Salary
 fss_mgr_nodes = []
 for i in range(fss_num_managers):
     mgr_id = f"FSS_Manager_{i+1}"
-    dot.node(mgr_id, "FSS Manager")
+    dot.node(mgr_id, f"FSS Manager
+Level 5-{spine:02}")
     dot.edge("Boss", mgr_id)
     salary, spine = get_salary(5, seniority)
     staff_rows.append({"Role": "FSS Manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "1_FSS"})
     fss_mgr_nodes.append(mgr_id)
 
 # Systems team
-dot.node("Sys_Manager", "Systems manager")
+dot.node("Sys_Manager", f"Systems manager
+Level 5-{spine:02}")
 dot.edge("Boss", "Sys_Manager")
 salary, spine = get_salary(5, seniority)
 staff_rows.append({"Role": "Systems manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "2_Systems"})
 
 # Content team manager (if shown separately)
 if show_content_as_team:
-    dot.node("Content_Manager", "Content manager")
+    dot.node("Content_Manager", f"Content manager
+Level 5-{spine:02}")
     dot.edge("Boss", "Content_Manager")
     salary, spine = get_salary(5, seniority)
     staff_rows.append({"Role": "Content manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "3_Content"})
@@ -110,7 +114,8 @@ def create_workers(team, count, parent_nodes):
             worker_counter += 1
             team_label = team.split('_')[1]
             role_label = f"{team_label} worker"
-            dot.node(role, f"{role_label}\nLevel {level}\nSpine {spine}")
+            dot.node(role, f"{role_label}
+Level {level}-{spine:02}")
             parent = next(parent_nodes)
             dot.edge(parent, role)
             staff_rows.append({"Role": role_label, "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
