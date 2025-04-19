@@ -97,14 +97,16 @@ def calc_worker_allocation(seniority_pct):
 allocations = calc_worker_allocation(seniority)
 
 # --- Create and assign workers ---
-all_fss_workers = []
+worker_counter = 0
 
 def create_workers(team, count, parent_nodes):
+    global worker_counter
     local_workers = []
     for level, proportion in allocations:
-        for i in range(math.ceil(count * proportion)):
+        for _ in range(math.ceil(count * proportion)):
             salary, spine = get_salary(level, seniority)
-            role = f"{team}_Staff_{level}_{i+1}"
+            role = f"{team}_Worker_{worker_counter}"
+            worker_counter += 1
             team_label = team.split('_')[1]
             role_label = f"{team_label} worker"
             dot.node(role, f"{role_label}\nLevel {level}\nSpine {spine}")
@@ -116,13 +118,13 @@ def create_workers(team, count, parent_nodes):
 
 # Round-robin distribution to FSS managers
 fss_mgr_cycle = itertools.cycle(fss_mgr_nodes)
-all_fss_workers = create_workers("1_FSS", fss_num_staff, fss_mgr_cycle)
+create_workers("1_FSS", fss_num_staff, fss_mgr_cycle)
 
 # Content workers: integrate with FSS or show separately
 if show_content_as_team:
-    content_workers = create_workers("3_Content", content_num_staff, itertools.cycle(["Content_Manager"]))
+    create_workers("3_Content", content_num_staff, itertools.cycle(["Content_Manager"]))
 else:
-    all_fss_workers += create_workers("1_FSS", content_num_staff, fss_mgr_cycle)
+    create_workers("1_FSS", content_num_staff, fss_mgr_cycle)
 
 # Systems workers
 create_workers("2_Systems", system_num_staff, itertools.cycle(["Sys_Manager"]))
