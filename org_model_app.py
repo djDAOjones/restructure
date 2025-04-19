@@ -50,6 +50,4 @@ dot.node("Boss", "Director", shape="box")
 
 # FSS
 fss_lead = "FSS_Lead"
-fss_label = "FSS Manager" if fss_num_managers == 1 else "FSS Manager" + "
-" + "
-".join(["FSS Manager"] * (fss_num_managers - 1))
+fss_label = " / ".join(["FSS Manager"] * fss_num_managers)
