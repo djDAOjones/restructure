@@ -213,4 +213,8 @@ for row in staff_rows:
     row["Salary"] = f"£{row['Salary']:,.0f}"
     row["Org Cost"] = f"£{row['Org Cost']:,.0f}"
 
-st.dataframe(staff_rows)
+with st.container():
+    for row in staff_rows:
+        st.markdown(f"**{row['Role']}**  ")
+        st.markdown(f"Level {row['Level']} | Spine Point {row['Spine Point']} | Salary: {row['Salary']} | Org Cost: {row['Org Cost']}")
+        st.markdown("---")
