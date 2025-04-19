@@ -71,10 +71,15 @@ costs = {
     "Content Workers": 0
 }
 
+# --- Global staffing level control ---
+staff_scale = st.slider("Global Staffing Level (%)", 0, 100, 50, format="%d%%")
+
+# Seniority adjustment slider
+seniority = st.slider("Global Staff Seniority (% with full senior staff)", 0, 100, 100, format="%d%%")
+
 # Reserve chart space early
 chart_container = st.container()
 
-# --- Global staffing level control ---
 staff_scale = st.slider("Global Staffing Level (%)", 0, 100, 50, format="%d%%")
 
 # Seniority adjustment slider
@@ -129,21 +134,9 @@ for w in range(1, content_num_staff + 1):
     dot.edge(content_mgr, worker)
 
 # --- Calculate costs ---
-# Reset costs
-costs["FSS Workers"] = 0
-costs["System Workers"] = 0
-costs["Content Workers"] = 0
-
-for row in staff_rows:
-    role = row["Role"]
-    raw_cost = int(row["Org Cost"].replace("£", "").replace(",", ""))
-    if "FSS Staff" in role:
-        costs["FSS Workers"] += raw_cost
-    elif "Systems Staff" in role:
-        costs["System Workers"] += raw_cost
-    elif "Content Staff" in role:
-        costs["Content Workers"] += raw_cost
-
+costs["FSS Workers"] = fss_num_staff * avg_worker_cost
+costs["System Workers"] = system_num_staff * avg_worker_cost
+costs["Content Workers"] = content_num_staff * avg_worker_cost
 total_cost = sum(costs.values())
 
 # --- Render chart at the top ---
