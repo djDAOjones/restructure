@@ -24,8 +24,8 @@ SPINE_RANGES = {
     6: list(range(54, 58))
 }
 
-COLOR_LOW = (0, 128, 0)  # Green
-COLOR_HIGH = (255, 51, 51)  # Red
+COLOR_LOW = (51, 204, 51)   # #33CC33 — bright green
+COLOR_HIGH = (255, 51, 51)  # #FF3333 — Streamlit red
 
 def interpolate_color(level, spine):
     spine_range = SPINE_RANGES.get(level)
@@ -119,7 +119,7 @@ for level, proportion in allocations:
             label = f"{team}_Staff_{level}_{i+1}"
             team_name = team.split('_')[1]
             color = interpolate_color(level, spine)
-            dot.node(label, f"{team_name} Staff\\nLevel {level}", color=color)
+            dot.node(label, f"{team_name} Staff\nLevel {level}", color=color)
             dot.edge(parent, label, color=color)
             staff_rows.append({"Role": f"{team_name} Staff", "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
 
