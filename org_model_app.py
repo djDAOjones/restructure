@@ -24,8 +24,8 @@ SPINE_RANGES = {
     6: list(range(54, 58))
 }
 
-COLOR_LOW = (51, 204, 51)   # #33CC33 — bright green
-COLOR_HIGH = (255, 51, 51)  # #FF3333 — Streamlit red
+COLOR_LOW = (16, 38, 59)
+COLOR_HIGH = (249, 129, 9)
 
 def interpolate_color(level, spine):
     spine_range = SPINE_RANGES.get(level)
@@ -45,10 +45,10 @@ def get_salary(level, seniority_pct):
     spine_point = spine_range[index]
     return df_salaries.get(spine_point, 0), spine_point
 
-# --- Sliders ---
-staff_scale = st.slider("Number of staff", 29, 100, 50, format="%d%%")
-seniority_display = st.slider("Seniority afforded", 76, 100, 100, format="%d%%")
-seniority = 76 + ((seniority_display - 76) / 24) * 100  # maps display range [76–100] to actual [0–100]
+# --- Controls ---
+st.markdown("<p style='font-size:0.9em; font-weight:600;'>Controls</p>", unsafe_allow_html=True)
+staff_scale = st.slider("Number of staff", 0, 100, 50, format="%d%%")
+seniority = st.slider("Seniority afforded", 0, 100, 100, format="%d%%")
 chart_container = st.container()
 
 # --- Team Config ---
@@ -120,7 +120,7 @@ for level, proportion in allocations:
             label = f"{team}_Staff_{level}_{i+1}"
             team_name = team.split('_')[1]
             color = interpolate_color(level, spine)
-            dot.node(label, f"{team_name} Staff\nLevel {level}", color=color)
+            dot.node(label, f"{team_name} Staff\\nLevel {level}", color=color)
             dot.edge(parent, label, color=color)
             staff_rows.append({"Role": f"{team_name} Staff", "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
 
