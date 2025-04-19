@@ -4,12 +4,11 @@ import graphviz
 st.set_page_config(page_title="Org Chart", layout="centered")
 st.title("Restructure Chart")
 
-import pandas as pd
-
-# Load salary scale from Excel
-salary_file = "salary-scales-on-costs-pay-award-2025.3-apr.xlsx"
-df_clean = pd.read_excel(salary_file, sheet_name='Level 4-6 scale', skiprows=5)
-df_salaries = df_clean[['Point', 'Salary']].dropna().astype({'Point': int, 'Salary': int}).set_index('Point')
+# Predefined salary spine values (based on Excel data)
+df_salaries = {
+    23: 31637,  # Level 4
+    18: 27679   # Level 3
+}
 
 # Salary data and cost multipliers
 SALARY_COSTS = {
@@ -132,9 +131,9 @@ def calc_worker_allocation(seniority_pct):
 
 def calc_worker_salary(level):
     if level == 4:
-        return df_salaries.loc[23, 'Salary']
+        return df_salaries[23]
     elif level == 3:
-        return df_salaries.loc[18, 'Salary']
+        return df_salaries[18]
     elif level == 2:
         return round(SALARY_COSTS["Level 4"] * 0.4)
 
