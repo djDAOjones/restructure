@@ -45,20 +45,12 @@ def get_salary(level, seniority_pct):
     spine_point = spine_range[index]
     return df_salaries.get(spine_point, 0), spine_point
 
-# --- Sliders with custom visual label formatting (display 29-100% and 76-100%) ---
-def format_slider_label(value, min_display):
-    return f"{min_display + round((100 - min_display) * value / 100)}%"
+# --- Sliders: UI shows real-world values, logic uses 0-100 internally ---
+staff_scale_input = st.slider("Number of staff", 29, 100, 50)
+staff_scale = (staff_scale_input - 29) * (100 / (100 - 29))
 
-st.markdown("<style>label[data-baseweb='slider'] span:first-child { visibility: hidden; height: 0; }</style>", unsafe_allow_html=True)
-
-staff_scale_slider = st.slider(" ", 0, 100, 50, key="staff_slider")
-st.markdown(f"<p style='margin-top:-28px;font-size:0.9em;font-weight:600;'>Number of staff: {format_slider_label(staff_scale_slider, 29)}</p>", unsafe_allow_html=True)
-
-seniority_slider = st.slider(" ", 0, 100, 100, key="seniority_slider")
-st.markdown(f"<p style='margin-top:-28px;font-size:0.9em;font-weight:600;'>Seniority afforded: {format_slider_label(seniority_slider, 76)}</p>", unsafe_allow_html=True)
-
-staff_scale = staff_scale_slider
-seniority = seniority_slider
+seniority_input = st.slider("Seniority afforded", 76, 100, 100)
+seniority = (seniority_input - 76) * (100 / (100 - 76))
 
 chart_container = st.container()
 
