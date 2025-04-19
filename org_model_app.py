@@ -69,19 +69,19 @@ content_num_staff = st.slider("Number of Learning Content Workers", 1, 5, conten
 # --- Org Chart ---
 dot = graphviz.Digraph(engine="circo")
 dot.attr(ranksep="1.5", nodesep="1.0")
-dot.node("Boss", "Director", shape="box", style="filled", fillcolor=interpolate_color(6, SPINE_RANGES[6][-1]))
+dot.node("Boss", "Director", shape="box", color=interpolate_color(6, SPINE_RANGES[6][-1]))
 
 fss_lead = "FSS_Lead"
 fss_label = " / ".join(["FSS Manager"] * fss_num_managers)
-dot.node(fss_lead, fss_label, style="filled", fillcolor=interpolate_color(5, SPINE_RANGES[5][-1]))
+dot.node(fss_lead, fss_label, color=interpolate_color(5, SPINE_RANGES[5][-1]))
 dot.edge("Boss", fss_lead)
 
 sys_mgr = "Sys_Manager"
-dot.node(sys_mgr, "Systems Manager", style="filled", fillcolor=interpolate_color(5, SPINE_RANGES[5][-1]))
+dot.node(sys_mgr, "Systems Manager", color=interpolate_color(5, SPINE_RANGES[5][-1]))
 dot.edge("Boss", sys_mgr)
 
 content_mgr = "LC_Manager"
-dot.node(content_mgr, "Content Manager", style="filled", fillcolor=interpolate_color(5, SPINE_RANGES[5][-1]))
+dot.node(content_mgr, "Content Manager", color=interpolate_color(5, SPINE_RANGES[5][-1]))
 dot.edge("Boss", content_mgr)
 
 # --- Staffing Table Generation ---
@@ -120,7 +120,8 @@ for level, proportion in allocations:
             label = f"{team}_Staff_{level}_{i+1}"
             team_name = team.split('_')[1]
             color = interpolate_color(level, spine)
-            dot.node(label, f"{team_name} Staff\nLevel {level}", style="filled", fillcolor=color)
+            dot.node(label, f"{team_name} Staff
+Level {level}", color=color)
             dot.edge(parent, label, color=color)
             staff_rows.append({"Role": f"{team_name} Staff", "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
 
