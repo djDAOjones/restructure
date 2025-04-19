@@ -50,5 +50,4 @@ dot.node("Boss", "Director", shape="box")
 
 # FSS
 fss_lead = "FSS_Lead"
-fss_label = "
-".join(["FSS Manager"] * fss_num_managers)
+fss_label = "\n".join(["FSS Manager"] * fss_num_managers)
