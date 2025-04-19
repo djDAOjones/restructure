@@ -204,9 +204,9 @@ for level, proportion in allocations:
         staff_rows.append({"Role": "Content Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary})
 
 # --- Calculate costs ---
-costs["FSS Workers"] = sum(int(row["Org Cost"].replace("£", "").replace(",", "")) for row in staff_rows if row["Role"] == "FSS Staff")
-costs["System Workers"] = sum(int(row["Org Cost"].replace("£", "").replace(",", "")) for row in staff_rows if row["Role"] == "Systems Staff")
-costs["Content Workers"] = sum(int(row["Org Cost"].replace("£", "").replace(",", "")) for row in staff_rows if row["Role"] == "Content Staff")
+costs["FSS Workers"] = sum(row["Org Cost"] for row in staff_rows if row["Role"] == "FSS Staff")
+costs["System Workers"] = sum(row["Org Cost"] for row in staff_rows if row["Role"] == "Systems Staff")
+costs["Content Workers"] = sum(row["Org Cost"] for row in staff_rows if row["Role"] == "Content Staff")
 total_cost = sum(costs.values())
 
 # --- Render chart at the top ---
