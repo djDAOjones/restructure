@@ -201,7 +201,7 @@ for level, proportion in allocations:
         label = f"Cont_Staff_{level}_{i+1}"
         dot.node(label, f"Content Staff\nLevel {level}")
         dot.edge(content_mgr, label)
-        staff_rows.append({"Role": "Content Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary})
+        staff_rows.append({"Role": "Content Staff", "Level": level, "Spine Point": 20, "Salary": salary})
 
 # --- Calculate costs ---
 costs["FSS Workers"] = sum(row["Salary"] for row in staff_rows if row["Role"] == "FSS Staff")
