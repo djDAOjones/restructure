@@ -33,23 +33,23 @@ def get_salary(level, seniority_pct):
     return df_salaries.get(spine_point, 0), spine_point
 
 # --- Controls ---
-st.subheader("Controls")
+st.markdown("## Controls")
 staff_scale = st.slider("Number of staff", 0, 100, 50, format="%d%%")
 seniority = st.slider("Seniority afforded", 0, 100, 100, format="%d%%")
 chart_container = st.container()
 
 # --- Team Config ---
-st.subheader("Faculty and School Support (FSS)")
+st.markdown("## Faculty and School Support (FSS)")
 fss_mgr_default = int(1 + (3 * staff_scale / 100))
 fss_num_managers = st.slider("Number of Managers (FSS)", 1, 4, fss_mgr_default, key="fss_mgr_slider")
 fss_default = int(5 + (15 * staff_scale / 100))
 fss_num_staff = st.slider("Number of Staff (FSS)", 5, 20, fss_default, key="fss_slider")
 
-st.subheader("Learning Systems Team")
+st.markdown("## Learning Systems Team")
 system_default = int(3 + (7 * staff_scale / 100))
 system_num_staff = st.slider("Number of Systems Workers", 3, 10, system_default, key="system_slider")
 
-st.subheader("Learning Content Team")
+st.markdown("## Learning Content Team")
 content_default = int(1 + (4 * staff_scale / 100))
 content_num_staff = st.slider("Number of Learning Content Workers", 1, 5, content_default, key="content_slider")
 
@@ -106,7 +106,7 @@ for level, proportion in allocations:
 # --- Chart Output ---
 total_cost = sum(row["Salary"] for row in staff_rows)
 with chart_container:
-    st.subheader(f"Total Estimated Cost: £{total_cost:,.0f}")
+    st.markdown(f"## Total Estimated Cost: £{total_cost:,.0f}")
     st.graphviz_chart(dot)
 
 # --- Staff Listing Table ---
@@ -114,7 +114,7 @@ for row in staff_rows:
     row["Salary"] = f"£{row['Salary']:,.0f}"
 
 if staff_rows:
-    st.subheader("Full Staff Listing")
+    st.markdown("## Full Staff Listing")
     df_table = pd.DataFrame([{
         "role name": row["Role"],
         "level": row["Level"],
