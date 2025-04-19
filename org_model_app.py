@@ -91,4 +91,62 @@ dot.edge("Boss", content_mgr)
 staff_rows = []
 
 salary, spine = get_salary(6, seniority)
-staff_rows.append({"Role": "Director", "Level": 6, "Spine Point": spine, "Salary": salary,
+staff_rows.append({"Role": "Director", "Level": 6, "Spine Point": spine, "Salary": salary, "Team": "0_Director"})
+
+for i in range(fss_num_managers):
+    salary, spine = get_salary(5, seniority)
+    staff_rows.append({"Role": "FSS Manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "1_FSS"})
+
+for role in ["Systems Manager", "Content Manager"]:
+    salary, spine = get_salary(5, seniority)
+    team = "2_Systems" if "Systems" in role else "3_Content"
+    staff_rows.append({"Role": role, "Level": 5, "Spine Point": spine, "Salary": salary, "Team": team})
+
+def calc_worker_allocation(seniority_pct):
+    low_mix = {4: 0.25, 3: 0.5, 2: 0.25}
+    high_mix = {4: 1.0, 3: 0.0, 2: 0.0}
+    mix = {}
+    for level in [4, 3, 2]:
+        mix[level] = (seniority_pct / 100) * high_mix[level] + ((100 - seniority_pct) / 100) * low_mix[level]
+    return [(level, proportion) for level, proportion in mix.items() if proportion > 0.01]
+
+allocations = calc_worker_allocation(seniority)
+
+for level, proportion in allocations:
+    for team, parent, count in [
+        ("1_FSS", fss_lead, fss_num_staff),
+        ("2_Systems", sys_mgr, system_num_staff),
+        ("3_Content", content_mgr, content_num_staff)
+    ]:
+        for i in range(math.ceil(count * proportion)):
+            salary, spine = get_salary(level, seniority)
+            label = f"{team}_Staff_{level}_{i+1}"
+            team_name = team.split('_')[1]
+            color = interpolate_color(level, spine)
+            dot.node(label, f"{team_name} Staff\nLevel {level}", color=color)
+            dot.edge(parent, label, color=color)
+            staff_rows.append({"Role": f"{team_name} Staff", "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
+
+# --- Chart Output ---
+total_cost = sum(row["Salary"] for row in staff_rows)
+with chart_container:
+    st.markdown(f"<p style='font-size:0.9em; font-weight:600;'>Total Estimated Cost: £{total_cost:,.0f}</p>", unsafe_allow_html=True)
+    st.graphviz_chart(dot)
+
+# --- Staff Listing Table ---
+for row in staff_rows:
+    row["Salary"] = f"£{row['Salary']:,.0f}"
+
+if staff_rows:
+    st.markdown("<p style='font-size:0.9em; font-weight:600;'>Full Staff Listing</p>", unsafe_allow_html=True)
+    df_table = pd.DataFrame([{
+        "role name": row["Role"],
+        "team": row["Team"],
+        "level": row["Level"],
+        "spline": row["Spine Point"],
+        "cost": row["Salary"]
+    } for row in staff_rows])
+
+    df_table.sort_values(by=["team", "role name", "level", "spline"], inplace=True)
+    df_table.drop(columns=["team"], inplace=True)
+    st.table(df_table)
