@@ -55,6 +55,7 @@ fss_num_managers = max(1, round(total_fss_workers / workers_per_mgr))
 # --- Org Chart ---
 dot = graphviz.Digraph(engine="circo")
 dot.attr(ranksep="1.5", nodesep="1.0")
+salary, spine = get_salary(6, seniority)
 dot.node("Boss", f"Director
 Level 6-{spine:02}", shape="box")
 
@@ -68,7 +69,8 @@ staff_rows.append({"Role": "Director", "Level": 6, "Spine Point": spine, "Salary
 fss_mgr_nodes = []
 for i in range(fss_num_managers):
     mgr_id = f"FSS_Manager_{i+1}"
-    dot.node(mgr_id, f"FSS Manager
+    salary, spine = get_salary(5, seniority)
+dot.node(mgr_id, f"FSS Manager
 Level 5-{spine:02}")
     dot.edge("Boss", mgr_id)
     salary, spine = get_salary(5, seniority)
@@ -76,6 +78,7 @@ Level 5-{spine:02}")
     fss_mgr_nodes.append(mgr_id)
 
 # Systems team
+salary, spine = get_salary(5, seniority)
 dot.node("Sys_Manager", f"Systems manager
 Level 5-{spine:02}")
 dot.edge("Boss", "Sys_Manager")
@@ -84,7 +87,8 @@ staff_rows.append({"Role": "Systems manager", "Level": 5, "Spine Point": spine, 
 
 # Content team manager (if shown separately)
 if show_content_as_team:
-    dot.node("Content_Manager", f"Content manager
+    salary, spine = get_salary(5, seniority)
+dot.node("Content_Manager", f"Content manager
 Level 5-{spine:02}")
     dot.edge("Boss", "Content_Manager")
     salary, spine = get_salary(5, seniority)
