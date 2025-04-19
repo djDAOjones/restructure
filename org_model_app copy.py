@@ -12,7 +12,7 @@ SALARY_COSTS = {
 }
 
 # Seniority adjustment slider
-seniority = st.slider("Global Staff Seniority (% with full senior staff)", 0, 100, 100)
+seniority = st.slider("Global Staff Seniority (%)", 0, 100, 100)
 
 # Estimate average worker cost based on seniority percentage
 avg_worker_cost = round(SALARY_COSTS["Level 4"] * (seniority / 100) + SALARY_COSTS["Level 4"] * 0.7 * ((100 - seniority) / 100))
@@ -33,7 +33,7 @@ chart_container = st.container()
 
 # --- Sliders for each team ---
 st.header("Faculty and School Support (FSS)")
-fss_num_managers = st.slider("Number of Managers (FSS)", 1, 4, 2)
+fss_num_managers = st.slider("Number of Co-Managers (FSS)", 1, 4, 2)
 fss_num_staff = st.slider("Number of Staff (FSS)", 5, 20, 8)
 
 st.header("Learning Systems Team")
@@ -110,56 +110,13 @@ staff_rows.append({"Role": "Systems Manager", "Level": 5, "Spine Point": 44, "Sa
 staff_rows.append({"Role": "Content Manager", "Level": 5, "Spine Point": 44, "Salary": 66460, "Org Cost": SALARY_COSTS["Level 5"]})
 
 # Workers at lower seniority
-import math
+def calc_worker_salary(seniority_pct):
+    max_salary = SALARY_COSTS["Level 4"]
+    min_salary = SALARY_COSTS["Level 4"] * 0.7
+    return round(min_salary + (max_salary - min_salary) * (seniority_pct / 100))
 
-def calc_worker_allocation(seniority_pct):
-    if seniority_pct == 0:
-        return [(4, 0.25), (3, 0.5), (2, 0.25)]
-    else:
-        return [(4, 1.0)]
-
-def calc_worker_salary(level):
-    if level == 4:
-        return df_salaries.loc[23, 'Salary']
-    elif level == 3:
-        return df_salaries.loc[18, 'Salary']
-    elif level == 2:
-        return round(SALARY_COSTS["Level 4"] * 0.4)
-
-allocations = calc_worker_allocation(seniority)
-
-# FSS workers
-for level, proportion in allocations:
-    count = math.ceil(fss_num_staff * proportion)
-    for i in range(count):
-        salary = calc_worker_salary(level)
-        label = f"FSS Staff {level}-{i+1}"
-        dot.node(label, f"FSS Staff
-Level {level}")
-        dot.edge(fss_lead, label)
-        staff_rows.append({"Role": "FSS Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary})
-
-# Systems workers
-for level, proportion in allocations:
-    count = math.ceil(system_num_staff * proportion)
-    for i in range(count):
-        salary = calc_worker_salary(level)
-        label = f"Sys_Staff_{level}_{i+1}"
-        dot.node(label, f"Systems Staff
-Level {level}")
-        dot.edge(sys_mgr, label)
-        staff_rows.append({"Role": "Systems Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary})
-
-# Content workers
-for level, proportion in allocations:
-    count = math.ceil(content_num_staff * proportion)
-    for i in range(count):
-        salary = calc_worker_salary(level)
-        label = f"Cont_Staff_{level}_{i+1}"
-        dot.node(label, f"Content Staff
-Level {level}")
-        dot.edge(content_mgr, label)
-        staff_rows.append({"Role": "Content Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary})int(24 + (10 * (seniority / 100)))
+worker_salary = calc_worker_salary(seniority)
+worker_point = int(24 + (10 * (seniority / 100)))
 
 for i in range(fss_num_staff):
     staff_rows.append({"Role": "FSS Staff", "Level": 4, "Spine Point": worker_point, "Salary": worker_salary, "Org Cost": worker_salary})
@@ -167,9 +124,5 @@ for i in range(system_num_staff):
     staff_rows.append({"Role": "Systems Staff", "Level": 4, "Spine Point": worker_point, "Salary": worker_salary, "Org Cost": worker_salary})
 for i in range(content_num_staff):
     staff_rows.append({"Role": "Content Staff", "Level": 4, "Spine Point": worker_point, "Salary": worker_salary, "Org Cost": worker_salary})
-
-for row in staff_rows:
-    row["Salary"] = f"£{row['Salary']:,.0f}"
-    row["Org Cost"] = f"£{row['Org Cost']:,.0f}"
 
 st.dataframe(staff_rows)
