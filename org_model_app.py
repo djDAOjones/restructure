@@ -75,15 +75,16 @@ dot.edge("Boss", content_mgr)
 staff_rows = []
 
 salary, spine = get_salary(6, seniority)
-staff_rows.append({"Role": "Director", "Level": 6, "Spine Point": spine, "Salary": salary})
+staff_rows.append({"Role": "Director", "Level": 6, "Spine Point": spine, "Salary": salary, "Team": "Director"})
 
 for i in range(fss_num_managers):
     salary, spine = get_salary(5, seniority)
-    staff_rows.append({"Role": "FSS Manager", "Level": 5, "Spine Point": spine, "Salary": salary})
+    staff_rows.append({"Role": "FSS Manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "FSS"})
 
 for role in ["Systems Manager", "Content Manager"]:
     salary, spine = get_salary(5, seniority)
-    staff_rows.append({"Role": role, "Level": 5, "Spine Point": spine, "Salary": salary})
+    team = "Systems" if "Systems" in role else "Content"
+    staff_rows.append({"Role": role, "Level": 5, "Spine Point": spine, "Salary": salary, "Team": team})
 
 def calc_worker_allocation(seniority_pct):
     low_mix = {4: 0.25, 3: 0.5, 2: 0.25}
@@ -106,7 +107,7 @@ for level, proportion in allocations:
             label = f"{team}_Staff_{level}_{i+1}"
             dot.node(label, f"{team} Staff\nLevel {level}")
             dot.edge(parent, label)
-            staff_rows.append({"Role": f"{team} Staff", "Level": level, "Spine Point": spine, "Salary": salary})
+            staff_rows.append({"Role": f"{team} Staff", "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
 
 # --- Chart Output ---
 total_cost = sum(row["Salary"] for row in staff_rows)
@@ -122,12 +123,4 @@ if staff_rows:
     st.markdown("<p style='font-size:0.9em; font-weight:600;'>Full Staff Listing</p>", unsafe_allow_html=True)
     df_table = pd.DataFrame([{
         "role name": row["Role"],
-        "level": row["Level"],
-        "spline": row["Spine Point"],
-        "cost": row["Salary"]
-    } for row in staff_rows])
-
-    df_table["team"] = df_table["role name"].apply(lambda r: r.split()[0] if " " in r else r)
-    df_table.sort_values(by=["role name", "team", "level", "spline"], inplace=True, ascending=[True, True, True, True])
-    df_table.drop(columns=["team"], inplace=True)
-    st.dataframe(df_table, use_container_width=True, hide_index=True)
+        "team": row["Team
