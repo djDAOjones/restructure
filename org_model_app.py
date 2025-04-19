@@ -46,13 +46,9 @@ def get_salary(level, seniority_pct):
     return df_salaries.get(spine_point, 0), spine_point
 
 # --- Sliders ---
-staff_scale = st.slider("Number of staff", 0, 100, 50, format="%d%%", label_visibility="visible")
-seniority = st.slider("Seniority afforded", 0, 100, 100, format="%d%%", label_visibility="visible")
+staff_scale = st.slider("Number of staff", 0, 100, 50, format="%d%%", label_visibility="visible", value=50, min_value=0, max_value=100)
+seniority = st.slider("Seniority afforded", 0, 100, 100, format="%d%%", label_visibility="visible", value=100, min_value=0, max_value=100)
 chart_container = st.container()
-
-# Display override for labels
-st.markdown(f"<p style='font-size:0.85em;'>Staff scale: <strong>{29 + staff_scale}%</strong></p>", unsafe_allow_html=True)
-st.markdown(f"<p style='font-size:0.85em;'>Seniority afforded: <strong>{76 + seniority}%</strong></p>", unsafe_allow_html=True)
 
 # --- Team Config ---
 st.markdown("<p style='font-size:0.9em; font-weight:600;'>Faculty and School Support (FSS)</p>", unsafe_allow_html=True)
