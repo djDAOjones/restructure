@@ -12,7 +12,6 @@ SALARY_COSTS = {
 }
 
 
-# Estimate average worker cost based on seniority percentage
 avg_worker_cost = round(SALARY_COSTS["Level 4"] * (seniority / 100) + SALARY_COSTS["Level 4"] * 0.7 * ((100 - seniority) / 100))
 
 # Placeholder for cost calculation
@@ -33,6 +32,10 @@ chart_container = st.container()
 staff_scale = st.slider("Global Staffing Level (%)", 0, 100, 50, format="%d%%")
 
 # Seniority adjustment slider
+seniority = st.slider("Global Staff Seniority (% with full senior staff)", 0, 100, 100, format="%d%%")
+
+# Estimate average worker cost based on seniority percentage
+avg_worker_cost = round(SALARY_COSTS["Level 4"] * (seniority / 100) + SALARY_COSTS["Level 4"] * 0.7 * ((100 - seniority) / 100))
 seniority = st.slider("Global Staff Seniority (% with full senior staff)", 0, 100, 100, format="%d%%")
 
 # --- Sliders for each team ---
