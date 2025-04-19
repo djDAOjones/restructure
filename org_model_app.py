@@ -168,8 +168,6 @@ def calc_worker_salary(level):
     else:
         base = 0
     return int(round(base * 1.3 / 500) * 500)
-    elif level == 2:
-        return round(SALARY_COSTS["Level 4"] * 0.4)
 
 allocations = calc_worker_allocation(seniority)
 
