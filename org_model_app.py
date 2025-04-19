@@ -11,6 +11,9 @@ SALARY_COSTS = {
     "Level 4": 55747    # Workers (senior)
 }
 
+# --- Global staffing level control ---
+staff_scale = st.slider("Global Staffing Level", 0, 100, 50)
+
 # Seniority adjustment slider
 seniority = st.slider("Global Staff Seniority (% with full senior staff)", 0, 100, 100)
 
