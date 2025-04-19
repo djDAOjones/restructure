@@ -43,22 +43,28 @@ chart_container = st.container()
 
 # --- Team Config ---
 fss_mgr_default = int(1 + (3 * staff_scale / 100))
-fss_num_managers = st.slider("FSS managers", 1, 4, fss_mgr_default, key="fss_mgr_slider")
+# fss_num_managers = st.slider("FSS managers", 1, 4, fss_mgr_default, key="fss_mgr_slider")
 fss_default = int(5 + (15 * staff_scale / 100))
-fss_num_staff = st.slider("FSS workers", 5, 19, fss_default, key="fss_slider")
+# fss_num_staff = st.slider("FSS workers", 5, 19, fss_default, key="fss_slider")
 
 system_default = int(3 + (7 * staff_scale / 100))
-system_num_staff = st.slider("Systems team workers", 3, 10, system_default, key="system_slider")
+# system_num_staff = st.slider("Systems team workers", 3, 10, system_default, key="system_slider")
 
 content_default = min(3, int(1 + (4 * staff_scale / 100)))
-content_num_staff = st.slider("Learning content workers", 1, 3, content_default, key="content_slider")
+# content_num_staff = st.slider("Learning content workers", 1, 3, content_default, key="content_slider")
+
+# Use defaults directly while sliders are commented
+fss_num_managers = fss_mgr_default
+fss_num_staff = fss_default
+system_num_staff = system_default
+content_num_staff = content_default
 
 # --- Org Chart ---
 dot = graphviz.Digraph(engine="circo")
 dot.attr(ranksep="1.5", nodesep="1.0")
 dot.node("Boss", "Director", shape="box")
 
-fss_lead = "FSS_Lead"x
+fss_lead = "FSS_Lead"
 fss_label = " / ".join(["FSS Manager"] * fss_num_managers)
 dot.node(fss_lead, fss_label)
 dot.edge("Boss", fss_lead)
