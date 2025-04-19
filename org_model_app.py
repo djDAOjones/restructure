@@ -5,14 +5,14 @@ import math
 st.set_page_config(page_title="Org Chart", layout="centered")
 st.title("Restructure Chart")
 
-# Predefined salary spine values (based on Excel data)
+# Predefined salary spine values (based on Excel data, adjusted by 30% and rounded to nearest £200)
 df_salaries = {
-    13: 32100, 14: 32800, 15: 33600, 16: 34300, 17: 35100, 18: 36000, 19: 36800, 20: 37800,
-    21: 38700, 22: 39600, 23: 41100, 24: 42300, 25: 43500, 26: 44400, 27: 45600, 28: 47000,
-    29: 48300, 30: 49700, 31: 51100, 32: 52600, 33: 54100, 34: 55700, 35: 57400, 36: 59000,
-    37: 60700, 38: 62600, 39: 64400, 40: 66400, 41: 68300, 42: 70400, 43: 72500, 44: 74600,
-    45: 76900, 46: 79200, 47: 81500, 48: 84000, 49: 86500, 50: 89100, 51: 91700, 52: 94400,
-    53: 97300, 54: 100200, 55: 103200, 56: 106300, 57: 109500
+    13: 32100, 14: 32800, 15: 33600, 16: 34400, 17: 35200, 18: 36000, 19: 36800, 20: 37800,
+    21: 38600, 22: 39600, 23: 41200, 24: 42400, 25: 43600, 26: 44400, 27: 45600, 28: 47000,
+    29: 48400, 30: 49800, 31: 51200, 32: 52600, 33: 54200, 34: 55800, 35: 57400, 36: 59000,
+    37: 60800, 38: 62600, 39: 64400, 40: 66400, 41: 68400, 42: 70400, 43: 72600, 44: 74600,
+    45: 77000, 46: 79400, 47: 81800, 48: 84200, 49: 86800, 50: 89400, 51: 92000, 52: 94600,
+    53: 97400, 54: 100400, 55: 103400, 56: 106400, 57: 109600
 }
 
 # Define spine ranges by level
@@ -26,15 +26,15 @@ SPINE_RANGES = {
 
 def get_salary(level, seniority_pct):
     if level not in SPINE_RANGES:
-        return 0
+        return 0, 0
     spine_range = SPINE_RANGES[level]
     index = int(round((seniority_pct / 100) * (len(spine_range) - 1)))
     spine_point = spine_range[index]
     return df_salaries.get(spine_point, 0), spine_point
 
 # --- Global staffing level control ---
-staff_scale = st.slider("Global Staffing Level (%)", 0, 100, 50, format="%d%%")
-seniority = st.slider("Global Staff Seniority (% with full senior staff)", 0, 100, 100, format="%d%%")
+staff_scale = st.slider("Number of staff", 0, 100, 50, format="%d%%")
+seniority = st.slider("Seniority afforded", 0, 100, 100, format="%d%%")
 
 # Reserve chart space early
 chart_container = st.container()
