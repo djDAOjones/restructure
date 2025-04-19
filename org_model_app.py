@@ -45,11 +45,14 @@ def get_salary(level, seniority_pct):
     spine_point = spine_range[index]
     return df_salaries.get(spine_point, 0), spine_point
 
-# --- Controls ---
-st.markdown("<p style='font-size:0.9em; font-weight:600;'>Controls</p>", unsafe_allow_html=True)
-staff_scale = st.slider("Number of staff", 0, 100, 50, format="%d%%")
-seniority = st.slider("Seniority afforded", 0, 100, 100, format="%d%%")
+# --- Sliders ---
+staff_scale = st.slider("Number of staff", 0, 100, 50, format="%d%%", label_visibility="visible")
+seniority = st.slider("Seniority afforded", 0, 100, 100, format="%d%%", label_visibility="visible")
 chart_container = st.container()
+
+# Display override for labels
+st.markdown(f"<p style='font-size:0.85em;'>Staff scale: <strong>{29 + staff_scale}%</strong></p>", unsafe_allow_html=True)
+st.markdown(f"<p style='font-size:0.85em;'>Seniority afforded: <strong>{76 + seniority}%</strong></p>", unsafe_allow_html=True)
 
 # --- Team Config ---
 st.markdown("<p style='font-size:0.9em; font-weight:600;'>Faculty and School Support (FSS)</p>", unsafe_allow_html=True)
@@ -120,7 +123,7 @@ for level, proportion in allocations:
             label = f"{team}_Staff_{level}_{i+1}"
             team_name = team.split('_')[1]
             color = interpolate_color(level, spine)
-            dot.node(label, f"{team_name} Staff\\nLevel {level}", color=color)
+            dot.node(label, f"{team_name} Staff\nLevel {level}", color=color)
             dot.edge(parent, label, color=color)
             staff_rows.append({"Role": f"{team_name} Staff", "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
 
