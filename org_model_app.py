@@ -40,17 +40,17 @@ seniority = st.slider("Seniority afforded", 0, 100, 100, format="%d%%")
 chart_container = st.container()
 
 # --- Sliders for each team ---
-st.header("Faculty and School Support (FSS)")
+st.subheader("Faculty and School Support (FSS)")
 fss_mgr_default = int(1 + (3 * staff_scale / 100))
 fss_num_managers = st.slider("Number of Managers (FSS)", 1, 4, fss_mgr_default, key="fss_mgr_slider")
 fss_default = int(5 + (15 * staff_scale / 100))
 fss_num_staff = st.slider("Number of Staff (FSS)", 5, 20, fss_default, key="fss_slider")
 
-st.header("Learning Systems Team")
+st.subheader("Learning Systems Team")
 system_default = int(3 + (7 * staff_scale / 100))
 system_num_staff = st.slider("Number of Systems Workers", 3, 10, system_default, key="system_slider")
 
-st.header("Learning Content Team")
+st.subheader("Learning Content Team")
 content_default = int(1 + (4 * staff_scale / 100))
 content_num_staff = st.slider("Number of Learning Content Workers", 1, 5, content_default, key="content_slider")
 
@@ -77,7 +77,7 @@ dot.node(content_mgr, "Content Manager")
 dot.edge("Boss", content_mgr)
 
 # --- Detailed staff listing ---
-st.markdown("### Full Staff Listing")
+st.subheader("Full Staff Listing")
 staff_rows = []
 
 # Director
