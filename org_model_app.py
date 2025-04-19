@@ -141,13 +141,13 @@ st.markdown("### Full Staff Listing")
 staff_rows = []
 
 # Director
-staff_rows.append({"Role": "Director", "Level": 6, "Spine Point": 55, "Salary": 84116, "Org Cost": SALARY_COSTS["Level 6"]})
+staff_rows.append({"Role": "Director", "Level": 6, "Spine Point": 55, "Salary": SALARY_COSTS["Level 6"]})
 
 # Managers
 for i in range(fss_num_managers):
-    staff_rows.append({"Role": "FSS Manager", "Level": 5, "Spine Point": 44, "Salary": 66460, "Org Cost": SALARY_COSTS["Level 5"]})
-staff_rows.append({"Role": "Systems Manager", "Level": 5, "Spine Point": 44, "Salary": 66460, "Org Cost": SALARY_COSTS["Level 5"]})
-staff_rows.append({"Role": "Content Manager", "Level": 5, "Spine Point": 44, "Salary": 66460, "Org Cost": SALARY_COSTS["Level 5"]})
+    staff_rows.append({"Role": "FSS Manager", "Level": 5, "Spine Point": 44, "Salary": SALARY_COSTS["Level 5"]})
+staff_rows.append({"Role": "Systems Manager", "Level": 5, "Spine Point": 44, "Salary": SALARY_COSTS["Level 5"]})
+staff_rows.append({"Role": "Content Manager", "Level": 5, "Spine Point": 44, "Salary": SALARY_COSTS["Level 5"]})
 
 # Workers at lower seniority
 import math
@@ -181,7 +181,7 @@ for level, proportion in allocations:
         label = f"FSS Staff {level}-{i+1}"
         dot.node(label, f"FSS Staff\nLevel {level}")
         dot.edge(fss_lead, label)
-        staff_rows.append({"Role": "FSS Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary})
+        staff_rows.append({"Role": "FSS Staff", "Level": level, "Spine Point": 20, "Salary": salary})
 
 # Systems workers
 for level, proportion in allocations:
@@ -191,7 +191,7 @@ for level, proportion in allocations:
         label = f"Sys_Staff_{level}_{i+1}"
         dot.node(label, f"Systems Staff\nLevel {level}")
         dot.edge(sys_mgr, label)
-        staff_rows.append({"Role": "Systems Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary})
+        staff_rows.append({"Role": "Systems Staff", "Level": level, "Spine Point": 20, "Salary": salary, })
 
 # Content workers
 for level, proportion in allocations:
@@ -204,9 +204,9 @@ for level, proportion in allocations:
         staff_rows.append({"Role": "Content Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary})
 
 # --- Calculate costs ---
-costs["FSS Workers"] = sum(row["Org Cost"] for row in staff_rows if row["Role"] == "FSS Staff")
-costs["System Workers"] = sum(row["Org Cost"] for row in staff_rows if row["Role"] == "Systems Staff")
-costs["Content Workers"] = sum(row["Org Cost"] for row in staff_rows if row["Role"] == "Content Staff")
+costs["FSS Workers"] = sum(row["Salary"] for row in staff_rows if row["Role"] == "FSS Staff")
+costs["System Workers"] = sum(row["Salary"] for row in staff_rows if row["Role"] == "Systems Staff")
+costs["Content Workers"] = sum(row["Salary"] for row in staff_rows if row["Role"] == "Content Staff")
 total_cost = sum(costs.values())
 
 # --- Render chart at the top ---
@@ -216,10 +216,9 @@ with chart_container:
 
 for row in staff_rows:
     row["Salary"] = f"£{row['Salary']:,.0f}"
-    row["Org Cost"] = f"£{row['Org Cost']:,.0f}"
-
+    
 with st.container():
     for row in staff_rows:
         st.markdown(f"**{row['Role']}**  ")
-        st.markdown(f"Level {row['Level']} | Spine Point {row['Spine Point']} | Salary: {row['Salary']} | Org Cost: {row['Org Cost']}")
+        st.markdown(f"Level {row['Level']} | Spine Point {row['Spine Point']} | Salary: {row['Salary']}")
         st.markdown("---")
