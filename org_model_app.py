@@ -24,8 +24,8 @@ SPINE_RANGES = {
     6: list(range(54, 58))
 }
 
-COLOR_LOW = (0, 128, 0)   # Green
-COLOR_HIGH = (220, 38, 38)  # Red
+COLOR_LOW = (16, 38, 59)
+COLOR_HIGH = (249, 129, 9)
 
 def interpolate_color(level, spine):
     spine_range = SPINE_RANGES.get(level)
@@ -45,9 +45,10 @@ def get_salary(level, seniority_pct):
     spine_point = spine_range[index]
     return df_salaries.get(spine_point, 0), spine_point
 
-# --- Sliders ---
-staff_scale = st.slider("Number of staff", 29, 100, 50, format="%d%%")
-seniority = st.slider("Seniority afforded", 76, 100, 100, format="%d%%")
+# --- Controls ---
+st.markdown("<p style='font-size:0.9em; font-weight:600;'>Controls</p>", unsafe_allow_html=True)
+staff_scale = st.slider("Number of staff", 0, 100, 50, format="%d%%")
+seniority = st.slider("Seniority afforded", 0, 100, 100, format="%d%%")
 chart_container = st.container()
 
 # --- Team Config ---
@@ -142,3 +143,7 @@ if staff_rows:
         "spline": row["Spine Point"],
         "cost": row["Salary"]
     } for row in staff_rows])
+
+    df_table.sort_values(by=["team", "role name", "level", "spline"], inplace=True)
+    df_table.drop(columns=["team"], inplace=True)
+    st.table(df_table)
