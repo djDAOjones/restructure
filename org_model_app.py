@@ -53,11 +53,13 @@ df_salaries = {
     57: 109500
 }
 
-# Salary data and cost multipliers
-SALARY_COSTS = {
-    "Level 6": 109480,  # Director
-    "Level 5": 86498,   # Managers
-    "Level 4": 55747    # Workers (senior)
+# Define spine ranges by level
+SPINE_RANGES = {
+    2: list(range(13, 23)),
+    3: list(range(18, 28)),
+    4: list(range(23, 33)),
+    5: list(range(44, 54)),
+    6: list(range(54, 64))
 }
 
 
@@ -160,16 +162,13 @@ def calc_worker_allocation(seniority_pct):
     else:
         return [(4, 1.0)]
 
-def calc_worker_salary(level):
-    if level == 4:
-        base = df_salaries[23]
-    elif level == 3:
-        base = df_salaries[18]
-    elif level == 2:
-        base = df_salaries[13]
-    else:
-        base = 0
-    return int(round(base * 1.3 / 500) * 500)
+def get_salary(level, seniority_pct):
+    if level not in SPINE_RANGES:
+        return 0
+    spine_range = SPINE_RANGES[level]
+    index = int(round((seniority_pct / 100) * (len(spine_range) - 1)))
+    spine_point = spine_range[index]
+    return df_salaries.get(spine_point, 0)
 
 allocations = calc_worker_allocation(seniority)
 
@@ -177,7 +176,7 @@ allocations = calc_worker_allocation(seniority)
 for level, proportion in allocations:
     count = math.ceil(fss_num_staff * proportion)
     for i in range(count):
-        salary = calc_worker_salary(level)
+        salary = get_salary(level, seniority)
         label = f"FSS Staff {level}-{i+1}"
         dot.node(label, f"FSS Staff\nLevel {level}")
         dot.edge(fss_lead, label)
