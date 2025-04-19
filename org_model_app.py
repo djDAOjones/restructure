@@ -69,24 +69,24 @@ fss_mgr_nodes = []
 for i in range(fss_num_managers):
     mgr_id = f"FSS_Manager_{i+1}"
     salary, spine = get_salary(5, seniority)
-    dot.node(mgr_id, f"FSS Manager\\nLevel 5-{spine:02}", color="blue")
-    dot.edge("Boss", mgr_id)
+    dot.node(mgr_id, f"FSS manager\nLevel 5-{spine:02}", color="blue")
+    dot.edge("Boss", mgr_id, color="blue")
     salary, spine = get_salary(5, seniority)
-    staff_rows.append({"Role": "FSS Manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "1_FSS"})
+    staff_rows.append({"Role": "FSS manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "1_FSS"})
     fss_mgr_nodes.append(mgr_id)
 
 # Systems team
 salary, spine = get_salary(5, seniority)
-dot.node("Sys_Manager", f"Systems manager\\nLevel 5-{spine:02}", color="red")
-dot.edge("Boss", "Sys_Manager")
+dot.node("Sys_Manager", f"Systems manager\nLevel 5-{spine:02}", color="red")
+dot.edge("Boss", "Sys_Manager", color="red")
 salary, spine = get_salary(5, seniority)
 staff_rows.append({"Role": "Systems manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "2_Systems"})
 
 # Content team manager (if shown separately)
 if show_content_as_team:
     salary, spine = get_salary(5, seniority)
-    dot.node("Content_Manager", f"Content manager\\nLevel 5-{spine:02}", color="green")
-    dot.edge("Boss", "Content_Manager")
+    dot.node("Content_Manager", f"Content manager\nLevel 5-{spine:02}", color="green")
+    dot.edge("Boss", "Content_Manager", color="green")
     salary, spine = get_salary(5, seniority)
     staff_rows.append({"Role": "Content manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "3_Content"})
 
@@ -116,9 +116,9 @@ def create_workers(team, count, parent_nodes):
             role_label = f"{team_label} worker"
             color_map = {"FSS": "blue", "Systems": "red", "Content": "green"}
             color = color_map.get(team_label, "black")
-            dot.node(role, f"{role_label}\\nLevel {level}-{spine:02}", color=color)
+            dot.node(role, f"{role_label}\nLevel {level}-{spine:02}", color=color)
             parent = next(parent_nodes)
-            dot.edge(parent, role)
+            dot.edge(parent, role, color=color)
             staff_rows.append({"Role": role_label, "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
             local_workers.append(role)
     return local_workers
