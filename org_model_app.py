@@ -122,10 +122,15 @@ for row in staff_rows:
 if staff_rows:
     st.markdown("<p style='font-size:0.9em; font-weight:600;'>Full Staff Listing</p>", unsafe_allow_html=True)
     df_table = pd.DataFrame([{
-        "role name": row["Role"],
-        "level": row["Level"],
-        "spline": row["Spine Point"],
-        "cost": row["Salary"]
-    } for row in staff_rows])
+    "role name": row["Role"],
+    "level": row["Level"],
+    "spline": row["Spine Point"],
+    "cost": row["Salary"]
+} for row in staff_rows])
+
+# Sort by team (from role), then role, then level, then spline
+df_table["team"] = df_table["role name"].apply(lambda r: r.split()[0] if " " in r else r)
+df_table.sort_values(by=["team", "role name", "level", "spline"], inplace=True, ascending=[True, True, True, True])
+df_table.drop(columns=["team"], inplace=True)
 
     st.table(df_table)
