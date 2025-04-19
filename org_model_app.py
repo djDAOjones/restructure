@@ -84,7 +84,6 @@ costs["Content Workers"] = content_num_staff * avg_worker_cost
 
 total_cost = sum(costs.values())
 
-
 # --- Render chart at the top ---
 with chart_container:
     st.markdown(f"### 💷 Total Estimated Cost: £{total_cost:,.0f}")
@@ -96,3 +95,34 @@ st.table({
     "Team": list(costs.keys()),
     "Estimated Cost (£)": [f"£{v:,.0f}" for v in costs.values()]
 })
+
+# --- Detailed staff listing ---
+st.markdown("### Full Staff Listing")
+staff_rows = []
+
+# Director
+staff_rows.append({"Role": "Director", "Level": 6, "Spine Point": 55, "Salary": 84116, "Org Cost": SALARY_COSTS["Level 6"]})
+
+# Managers
+for i in range(fss_num_managers):
+    staff_rows.append({"Role": "FSS Manager", "Level": 5, "Spine Point": 44, "Salary": 66460, "Org Cost": SALARY_COSTS["Level 5"]})
+staff_rows.append({"Role": "Systems Manager", "Level": 5, "Spine Point": 44, "Salary": 66460, "Org Cost": SALARY_COSTS["Level 5"]})
+staff_rows.append({"Role": "Content Manager", "Level": 5, "Spine Point": 44, "Salary": 66460, "Org Cost": SALARY_COSTS["Level 5"]})
+
+# Workers at lower seniority
+def calc_worker_salary(seniority_pct):
+    max_salary = SALARY_COSTS["Level 4"]
+    min_salary = SALARY_COSTS["Level 4"] * 0.7
+    return round(min_salary + (max_salary - min_salary) * (seniority_pct / 100))
+
+worker_salary = calc_worker_salary(seniority)
+worker_point = int(24 + (10 * (seniority / 100)))
+
+for i in range(fss_num_staff):
+    staff_rows.append({"Role": "FSS Staff", "Level": 4, "Spine Point": worker_point, "Salary": worker_salary, "Org Cost": worker_salary})
+for i in range(system_num_staff):
+    staff_rows.append({"Role": "Systems Staff", "Level": 4, "Spine Point": worker_point, "Salary": worker_salary, "Org Cost": worker_salary})
+for i in range(content_num_staff):
+    staff_rows.append({"Role": "Content Staff", "Level": 4, "Spine Point": worker_point, "Salary": worker_salary, "Org Cost": worker_salary})
+
+st.dataframe(staff_rows)
