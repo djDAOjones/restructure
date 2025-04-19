@@ -129,10 +129,20 @@ for w in range(1, content_num_staff + 1):
     dot.edge(content_mgr, worker)
 
 # --- Calculate costs ---
-costs["FSS Managers"] = fss_num_managers * SALARY_COSTS["Level 5"]
-costs["FSS Workers"] = fss_num_staff * avg_worker_cost
-costs["System Workers"] = system_num_staff * avg_worker_cost
-costs["Content Workers"] = content_num_staff * avg_worker_cost
+# Reset costs
+costs["FSS Workers"] = 0
+costs["System Workers"] = 0
+costs["Content Workers"] = 0
+
+for row in staff_rows:
+    role = row["Role"]
+    raw_cost = int(row["Org Cost"].replace("£", "").replace(",", ""))
+    if "FSS Staff" in role:
+        costs["FSS Workers"] += raw_cost
+    elif "Systems Staff" in role:
+        costs["System Workers"] += raw_cost
+    elif "Content Staff" in role:
+        costs["Content Workers"] += raw_cost
 
 total_cost = sum(costs.values())
 
