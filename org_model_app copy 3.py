@@ -2,7 +2,6 @@ import streamlit as st
 import graphviz
 import math
 import pandas as pd
-import itertools
 
 st.set_page_config(page_title="Org Chart", layout="centered")
 st.title("Restructure Chart")
@@ -33,28 +32,50 @@ def get_salary(level, seniority_pct):
     spine_point = spine_range[index]
     return df_salaries.get(spine_point, 0), spine_point
 
-# --- Sliders and UI Controls ---
+# --- Sliders: UI shows real-world values, logic uses 0-100 internally ---
 staff_scale_input = st.slider("% of current staffing level", 29, 100, 50, format="%d%%")
 staff_scale = (staff_scale_input - 29) * (100 / (100 - 29))
 
 seniority_input = st.slider("Seniority afforded", 76, 100, 100, format="%d%%")
 seniority = (seniority_input - 76) * (100 / (100 - 76))
 
-max_workers_per_mgr = st.slider("Max workers per FSS manager", 5, 10, 8)
-show_content_as_team = st.checkbox("Show Learning Content as Separate Team", value=True)
-
 chart_container = st.container()
 
-# --- Team Counts ---
-fss_num_managers = int(1 + (3 * staff_scale / 100))
-fss_num_staff = int(5 + (15 * staff_scale / 100))
-system_num_staff = int(3 + (7 * staff_scale / 100))
-content_num_staff = min(3, int(1 + (4 * staff_scale / 100)))
+# --- Team Config ---
+fss_mgr_default = int(1 + (3 * staff_scale / 100))
+# fss_num_managers = st.slider("FSS managers", 1, 4, fss_mgr_default, key="fss_mgr_slider")
+fss_default = int(5 + (15 * staff_scale / 100))
+# fss_num_staff = st.slider("FSS workers", 5, 19, fss_default, key="fss_slider")
+
+system_default = int(3 + (7 * staff_scale / 100))
+# system_num_staff = st.slider("Systems team workers", 3, 10, system_default, key="system_slider")
+
+content_default = min(3, int(1 + (4 * staff_scale / 100)))
+# content_num_staff = st.slider("Learning content workers", 1, 3, content_default, key="content_slider")
+
+# Use defaults directly while sliders are commented
+fss_num_managers = fss_mgr_default
+fss_num_staff = fss_default
+system_num_staff = system_default
+content_num_staff = content_default
 
 # --- Org Chart ---
 dot = graphviz.Digraph(engine="circo")
 dot.attr(ranksep="1.5", nodesep="1.0")
 dot.node("Boss", "Director", shape="box")
+
+fss_lead = "FSS_Lead"
+fss_label = " / ".join(["FSS Manager"] * fss_num_managers)
+dot.node(fss_lead, fss_label)
+dot.edge("Boss", fss_lead)
+
+sys_mgr = "Sys_Manager"
+dot.node(sys_mgr, "Systems manager")
+dot.edge("Boss", sys_mgr)
+
+content_mgr = "LC_Manager"
+dot.node(content_mgr, "Content manager")
+dot.edge("Boss", content_mgr)
 
 # --- Staffing Table Generation ---
 staff_rows = []
@@ -62,30 +83,16 @@ staff_rows = []
 salary, spine = get_salary(6, seniority)
 staff_rows.append({"Role": "Director", "Level": 6, "Spine Point": spine, "Salary": salary, "Team": "0_Director"})
 
-# FSS Managers as individual nodes
-fss_mgr_nodes = []
 for i in range(fss_num_managers):
-    mgr_id = f"FSS_Manager_{i+1}"
-    dot.node(mgr_id, "FSS Manager")
-    dot.edge("Boss", mgr_id)
     salary, spine = get_salary(5, seniority)
     staff_rows.append({"Role": "FSS Manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "1_FSS"})
-    fss_mgr_nodes.append(mgr_id)
 
-# Systems team
-dot.node("Sys_Manager", "Systems manager")
-dot.edge("Boss", "Sys_Manager")
-salary, spine = get_salary(5, seniority)
-staff_rows.append({"Role": "Systems manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "2_Systems"})
-
-# Content team manager (if shown separately)
-if show_content_as_team:
-    dot.node("Content_Manager", "Content manager")
-    dot.edge("Boss", "Content_Manager")
+for role in ["Systems Manager", "Content Manager"]:
     salary, spine = get_salary(5, seniority)
-    staff_rows.append({"Role": "Content manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "3_Content"})
+    team = "2_Systems" if "Systems" in role else "3_Content"
+    role_name = "Systems manager" if team == "2_Systems" else "Content manager"
+    staff_rows.append({"Role": role_name, "Level": 5, "Spine Point": spine, "Salary": salary, "Team": team})
 
-# --- Worker allocation helper ---
 def calc_worker_allocation(seniority_pct):
     low_mix = {4: 0.25, 3: 0.5, 2: 0.25}
     high_mix = {4: 1.0, 3: 0.0, 2: 0.0}
@@ -96,36 +103,25 @@ def calc_worker_allocation(seniority_pct):
 
 allocations = calc_worker_allocation(seniority)
 
-# --- Create and assign workers ---
-all_fss_workers = []
-
-def create_workers(team, count, parent_nodes):
-    local_workers = []
-    for level, proportion in allocations:
+for level, proportion in allocations:
+    for team, parent, count in [
+        ("1_FSS", fss_lead, fss_num_staff),
+        ("2_Systems", sys_mgr, system_num_staff),
+        ("3_Content", content_mgr, content_num_staff)
+    ]:
         for i in range(math.ceil(count * proportion)):
             salary, spine = get_salary(level, seniority)
-            role = f"{team}_Staff_{level}_{i+1}"
-            team_label = team.split('_')[1]
-            role_label = f"{team_label} worker"
-            dot.node(role, f"{role_label}\nLevel {level}\nSpine {spine}")
-            parent = next(parent_nodes)
-            dot.edge(parent, role)
+            label = f"{team}_Staff_{level}_{i+1}"
+            team_name = team.split('_')[1]
+            if team_name == "FSS":
+                role_label = "FSS worker"
+            elif team_name == "Systems":
+                role_label = "Systems worker"
+            else:
+                role_label = "Content worker"
+            dot.node(label, f"{role_label}\nLevel {level}\nSpine {spine}")
+            dot.edge(parent, label)
             staff_rows.append({"Role": role_label, "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
-            local_workers.append(role)
-    return local_workers
-
-# Round-robin distribution to FSS managers
-fss_mgr_cycle = itertools.cycle(fss_mgr_nodes)
-all_fss_workers = create_workers("1_FSS", fss_num_staff, fss_mgr_cycle)
-
-# Content workers: integrate with FSS or show separately
-if show_content_as_team:
-    content_workers = create_workers("3_Content", content_num_staff, itertools.cycle(["Content_Manager"]))
-else:
-    all_fss_workers += create_workers("1_FSS", content_num_staff, fss_mgr_cycle)
-
-# Systems workers
-create_workers("2_Systems", system_num_staff, itertools.cycle(["Sys_Manager"]))
 
 # --- Chart Output ---
 total_cost = sum(row["Salary"] for row in staff_rows)
