@@ -1,11 +1,12 @@
 import streamlit as st
 import graphviz
 import math
+import pandas as pd
 
 st.set_page_config(page_title="Org Chart", layout="centered")
 st.title("Restructure Chart")
 
-# Predefined salary spine values (based on Excel data, adjusted by 30% and rounded to nearest £200)
+# --- Salary Spine Data (rounded to nearest £200 after 30% uplift) ---
 df_salaries = {
     13: 32100, 14: 32800, 15: 33600, 16: 34400, 17: 35200, 18: 36000, 19: 36800, 20: 37800,
     21: 38600, 22: 39600, 23: 41200, 24: 42400, 25: 43600, 26: 44400, 27: 45600, 28: 47000,
@@ -15,7 +16,6 @@ df_salaries = {
     53: 97400, 54: 100400, 55: 103400, 56: 106400, 57: 109600
 }
 
-# Define spine ranges by level
 SPINE_RANGES = {
     2: list(range(13, 23)),
     3: list(range(18, 28)),
@@ -32,14 +32,12 @@ def get_salary(level, seniority_pct):
     spine_point = spine_range[index]
     return df_salaries.get(spine_point, 0), spine_point
 
-# --- Global staffing level control ---
+# --- Controls ---
 staff_scale = st.slider("Number of staff", 0, 100, 50, format="%d%%")
 seniority = st.slider("Seniority afforded", 0, 100, 100, format="%d%%")
-
-# Reserve chart space early
 chart_container = st.container()
 
-# --- Sliders for each team ---
+# --- Team Config ---
 st.subheader("Faculty and School Support (FSS)")
 fss_mgr_default = int(1 + (3 * staff_scale / 100))
 fss_num_managers = st.slider("Number of Managers (FSS)", 1, 4, fss_mgr_default, key="fss_mgr_slider")
@@ -54,97 +52,72 @@ st.subheader("Learning Content Team")
 content_default = int(1 + (4 * staff_scale / 100))
 content_num_staff = st.slider("Number of Learning Content Workers", 1, 5, content_default, key="content_slider")
 
-# --- Build Org Chart ---
+# --- Org Chart ---
 dot = graphviz.Digraph(engine="circo")
 dot.attr(ranksep="1.5", nodesep="1.0")
-
 dot.node("Boss", "Director", shape="box")
 
-# FSS
 fss_lead = "FSS_Lead"
 fss_label = " / ".join(["FSS Manager"] * fss_num_managers)
 dot.node(fss_lead, fss_label)
 dot.edge("Boss", fss_lead)
 
-# System
 sys_mgr = "Sys_Manager"
 dot.node(sys_mgr, "Systems Manager")
 dot.edge("Boss", sys_mgr)
 
-# Content
 content_mgr = "LC_Manager"
 dot.node(content_mgr, "Content Manager")
 dot.edge("Boss", content_mgr)
 
-# --- Detailed staff listing ---
-st.subheader("Full Staff Listing")
+# --- Staffing Table Generation ---
 staff_rows = []
 
-# Director
 salary, spine = get_salary(6, seniority)
 staff_rows.append({"Role": "Director", "Level": 6, "Spine Point": spine, "Salary": salary})
 
-# Managers
 for i in range(fss_num_managers):
     salary, spine = get_salary(5, seniority)
     staff_rows.append({"Role": "FSS Manager", "Level": 5, "Spine Point": spine, "Salary": salary})
-salary, spine = get_salary(5, seniority)
-staff_rows.append({"Role": "Systems Manager", "Level": 5, "Spine Point": spine, "Salary": salary})
-staff_rows.append({"Role": "Content Manager", "Level": 5, "Spine Point": spine, "Salary": salary})
+
+for role in ["Systems Manager", "Content Manager"]:
+    salary, spine = get_salary(5, seniority)
+    staff_rows.append({"Role": role, "Level": 5, "Spine Point": spine, "Salary": salary})
 
 def calc_worker_allocation(seniority_pct):
-    if seniority_pct == 0:
-        return [(4, 0.25), (3, 0.5), (2, 0.25)]
-    else:
-        return [(4, 1.0)]
+    return [(4, 1.0)] if seniority_pct > 0 else [(4, 0.25), (3, 0.5), (2, 0.25)]
 
 allocations = calc_worker_allocation(seniority)
 
-# FSS workers
 for level, proportion in allocations:
-    count = math.ceil(fss_num_staff * proportion)
-    for i in range(count):
-        salary, spine = get_salary(level, seniority)
-        label = f"FSS Staff {level}-{i+1}"
-        dot.node(label, f"FSS Staff\nLevel {level}")
-        dot.edge(fss_lead, label)
-        staff_rows.append({"Role": "FSS Staff", "Level": level, "Spine Point": spine, "Salary": salary})
+    for team, parent, count in [
+        ("FSS", fss_lead, fss_num_staff),
+        ("Systems", sys_mgr, system_num_staff),
+        ("Content", content_mgr, content_num_staff)
+    ]:
+        for i in range(math.ceil(count * proportion)):
+            salary, spine = get_salary(level, seniority)
+            label = f"{team}_Staff_{level}_{i+1}"
+            dot.node(label, f"{team} Staff\nLevel {level}")
+            dot.edge(parent, label)
+            staff_rows.append({"Role": f"{team} Staff", "Level": level, "Spine Point": spine, "Salary": salary})
 
-# Systems workers
-for level, proportion in allocations:
-    count = math.ceil(system_num_staff * proportion)
-    for i in range(count):
-        salary, spine = get_salary(level, seniority)
-        label = f"Sys_Staff_{level}_{i+1}"
-        dot.node(label, f"Systems Staff\nLevel {level}")
-        dot.edge(sys_mgr, label)
-        staff_rows.append({"Role": "Systems Staff", "Level": level, "Spine Point": spine, "Salary": salary})
-
-# Content workers
-for level, proportion in allocations:
-    count = math.ceil(content_num_staff * proportion)
-    for i in range(count):
-        salary, spine = get_salary(level, seniority)
-        label = f"Cont_Staff_{level}_{i+1}"
-        dot.node(label, f"Content Staff\nLevel {level}")
-        dot.edge(content_mgr, label)
-        staff_rows.append({"Role": "Content Staff", "Level": level, "Spine Point": spine, "Salary": salary})
-
-# --- Calculate costs ---
+# --- Chart Output ---
 total_cost = sum(row["Salary"] for row in staff_rows)
-
-# --- Render chart at the top ---
 with chart_container:
     st.markdown(f"### 💷 Total Estimated Cost: £{total_cost:,.0f}")
     st.graphviz_chart(dot)
 
-# Format salary
+# --- Staff Listing Table ---
 for row in staff_rows:
     row["Salary"] = f"£{row['Salary']:,.0f}"
 
-# --- Display listing ---
-with st.container():
-    import pandas as pd
-    table_data = [{"role name": row["Role"], "level": row["Level"], "spline": row["Spine Point"], "cost": row["Salary"]} for row in staff_rows]
-    df_table = pd.DataFrame(table_data)
-    st.table(df_table)
+st.subheader("Full Staff Listing")
+df_table = pd.DataFrame([{
+    "role name": row["Role"],
+    "level": row["Level"],
+    "spline": row["Spine Point"],
+    "cost": row["Salary"]
+} for row in staff_rows])
+
+st.table(df_table)
