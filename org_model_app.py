@@ -81,7 +81,7 @@ dot.node(sys_mgr, "Systems manager", color=interpolate_color(5, SPINE_RANGES[5][
 dot.edge("Boss", sys_mgr)
 
 content_mgr = "LC_Manager"
-dot.node(content_mgr, "Content Manager", color=interpolate_color(5, SPINE_RANGES[5][-1]))
+dot.node(content_mgr, "Content manager", color=interpolate_color(5, SPINE_RANGES[5][-1]))
 dot.edge("Boss", content_mgr)
 
 # --- Staffing Table Generation ---
@@ -97,7 +97,7 @@ for i in range(fss_num_managers):
 for role in ["Systems Manager", "Content Manager"]:
     salary, spine = get_salary(5, seniority)
     team = "2_Systems" if "Systems" in role else "3_Content"
-    role_name = "Systems manager" if team == "2_Systems" else "Content Manager"
+    role_name = "Systems manager" if team == "2_Systems" else "Content manager"
     staff_rows.append({"Role": role_name, "Level": 5, "Spine Point": spine, "Salary": salary, "Team": team})
 
 def calc_worker_allocation(seniority_pct):
