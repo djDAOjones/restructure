@@ -47,7 +47,8 @@ def get_salary(level, seniority_pct):
 
 # --- Sliders ---
 staff_scale = st.slider("Number of staff", 29, 100, 50, format="%d%%")
-seniority = st.slider("Seniority afforded", 76, 100, 100, format="%d%%")
+seniority_display = st.slider("Seniority afforded", 76, 100, 100, format="%d%%")
+seniority = 76 + ((seniority_display - 76) / 24) * 100  # maps display range [76–100] to actual [0–100]
 chart_container = st.container()
 
 # --- Team Config ---
