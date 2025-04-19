@@ -58,7 +58,7 @@ dot = graphviz.Digraph(engine="circo")
 dot.attr(ranksep="1.5", nodesep="1.0")
 dot.node("Boss", "Director", shape="box")
 
-fss_lead = "FSS_Lead"x
+fss_lead = "FSS_Lead"
 fss_label = " / ".join(["FSS Manager"] * fss_num_managers)
 dot.node(fss_lead, fss_label)
 dot.edge("Boss", fss_lead)
