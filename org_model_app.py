@@ -31,16 +31,22 @@ costs = {
 # Reserve chart space early
 chart_container = st.container()
 
+# --- Global headcount control ---
+if seniority == 0:
+    fss_num_staff = 5
+    system_num_staff = 3
+    content_num_staff = 1
+
 # --- Sliders for each team ---
 st.header("Faculty and School Support (FSS)")
 fss_num_managers = st.slider("Number of Managers (FSS)", 1, 4, 2)
-fss_num_staff = st.slider("Number of Staff (FSS)", 5, 20, 8)
+fss_num_staff = st.slider("Number of Staff (FSS)", 5, 20, fss_num_staff)
 
 st.header("Learning Systems Team")
-system_num_staff = st.slider("Number of Systems Workers", 3, 10, 5)
+system_num_staff = st.slider("Number of Systems Workers", 3, 10, system_num_staff)
 
 st.header("Learning Content Team")
-content_num_staff = st.slider("Number of Learning Content Workers", 1, 5, 3)
+content_num_staff = st.slider("Number of Learning Content Workers", 1, 5, content_num_staff)
 
 # --- Build Org Chart ---
 dot = graphviz.Digraph(engine="circo")
@@ -134,7 +140,7 @@ for level, proportion in allocations:
     for i in range(count):
         salary = calc_worker_salary(level)
         label = f"FSS Staff {level}-{i+1}"
-        dot.node(label, f"FSS Staff\\nLevel {level}")
+        dot.node(label, f"FSS Staff\nLevel {level}")
         dot.edge(fss_lead, label)
         staff_rows.append({"Role": "FSS Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary})
 
@@ -144,7 +150,7 @@ for level, proportion in allocations:
     for i in range(count):
         salary = calc_worker_salary(level)
         label = f"Sys_Staff_{level}_{i+1}"
-        dot.node(label, f"Systems Staff\\nLevel {level}")
+        dot.node(label, f"Systems Staff\nLevel {level}")
         dot.edge(sys_mgr, label)
         staff_rows.append({"Role": "Systems Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary})
 
@@ -154,7 +160,7 @@ for level, proportion in allocations:
     for i in range(count):
         salary = calc_worker_salary(level)
         label = f"Cont_Staff_{level}_{i+1}"
-        dot.node(label, f"Content Staff\\nLevel {level}")
+        dot.node(label, f"Content Staff\nLevel {level}")
         dot.edge(content_mgr, label)
         staff_rows.append({"Role": "Content Staff", "Level": level, "Spine Point": 20, "Salary": salary, "Org Cost": salary})# Removed duplicate and invalid line
 
