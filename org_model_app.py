@@ -46,8 +46,8 @@ def get_salary(level, seniority_pct):
     return df_salaries.get(spine_point, 0), spine_point
 
 # --- Sliders ---
-staff_scale = st.slider("Number of staff", 0, 100, 50, format="%d%%", label_visibility="visible", value=50, min_value=0, max_value=100)
-seniority = st.slider("Seniority afforded", 0, 100, 100, format="%d%%", label_visibility="visible", value=100, min_value=0, max_value=100)
+staff_scale = st.slider("Number of staff", 0, 100, 50, format="%d%%", label_visibility="visible", format_func=lambda x: f"{29 + int((100 - 29) * x / 100)}%")
+seniority = st.slider("Seniority afforded", 0, 100, 100, format="%d%%", label_visibility="visible", format_func=lambda x: f"{76 + int((100 - 76) * x / 100)}%")
 chart_container = st.container()
 
 # --- Team Config ---
