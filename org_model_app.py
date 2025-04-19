@@ -147,5 +147,4 @@ with st.container():
     import pandas as pd
     table_data = [{"role name": row["Role"], "level": row["Level"], "spline": row["Spine Point"], "cost": row["Salary"]} for row in staff_rows]
     df_table = pd.DataFrame(table_data)
-    st.markdown("### Full Staff Listing")
     st.table(df_table)
