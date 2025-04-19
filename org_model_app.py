@@ -21,7 +21,7 @@ SPINE_RANGES = {
     3: list(range(18, 28)),
     4: list(range(23, 33)),
     5: list(range(44, 54)),
-    6: list(range(54, 64))
+    6: list(range(54, 58))
 }
 
 def get_salary(level, seniority_pct):
