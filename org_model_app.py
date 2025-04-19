@@ -86,7 +86,13 @@ for role in ["Systems Manager", "Content Manager"]:
     staff_rows.append({"Role": role, "Level": 5, "Spine Point": spine, "Salary": salary})
 
 def calc_worker_allocation(seniority_pct):
-    return [(4, 1.0)] if seniority_pct > 0 else [(4, 0.25), (3, 0.5), (2, 0.25)]
+    # Smoothly interpolate from low-seniority mix to high-seniority concentration
+    low_mix = {4: 0.25, 3: 0.5, 2: 0.25}
+    high_mix = {4: 1.0, 3: 0.0, 2: 0.0}
+    mix = {}
+    for level in [4, 3, 2]:
+        mix[level] = (seniority_pct / 100) * high_mix[level] + ((100 - seniority_pct) / 100) * low_mix[level]
+    return [(level, proportion) for level, proportion in mix.items() if proportion > 0.01]
 
 allocations = calc_worker_allocation(seniority)
 
