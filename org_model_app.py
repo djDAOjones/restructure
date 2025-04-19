@@ -144,7 +144,8 @@ for row in staff_rows:
 
 # --- Display listing ---
 with st.container():
-    for row in staff_rows:
-        st.markdown(f"**{row['Role']}**  ")
-        st.markdown(f"Level {row['Level']} | Spine Point {row['Spine Point']} | Salary: {row['Salary']}")
-        st.markdown("---")
+    st.markdown("### Full Staff Listing (Compact Table)")
+    import pandas as pd
+    table_data = [{"role name": row["Role"], "level": row["Level"], "spline": row["Spine Point"], "cost": row["Salary"]} for row in staff_rows]
+    df_table = pd.DataFrame(table_data)
+    st.table(df_table)
