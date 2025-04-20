@@ -18,11 +18,11 @@ df_salaries = {
 }
 
 SPINE_RANGES = {
-    2: list(range(13, 23)),
-    3: list(range(18, 28)),
-    4: list(range(23, 33)),
-    5: list(range(44, 54)),
-    6: list(range(54, 58))
+    2: list(range(13, 19)),
+    3: list(range(20, 28)),
+    4: list(range(27, 40)),
+    5: list(range(36, 45)),
+    6: list(range(45, 58))
 }
 
 def get_salary(level, seniority_pct):
