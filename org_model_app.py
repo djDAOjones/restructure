@@ -158,6 +158,21 @@ Level {level}-{spine:02}""", color=color, penwidth=str(penwidth))
 
     return local_workers
 
+# --- Create Workers ---
+
+# Round-robin distribution to FSS managers
+fss_mgr_cycle = itertools.cycle(fss_mgr_nodes)
+create_workers("1_FSS", fss_num_staff, fss_mgr_cycle)
+
+# Systems workers
+create_workers("2_Systems", system_num_staff, itertools.cycle(["Sys_Manager"]))
+
+# Content workers: integrate with FSS or show separately
+if show_content_as_team:
+    create_workers("3_Content", content_num_staff, itertools.cycle(["Content_Manager"]))
+else:
+    create_workers("3_Content", content_num_staff, itertools.cycle([fss_mgr_nodes[0]]))
+
 # Inject merged content worker edges together in a cluster
 if not show_content_as_team and merged_content_workers:
     with dot.subgraph(name="cluster_merged_content") as c:
