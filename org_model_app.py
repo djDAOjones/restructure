@@ -59,7 +59,7 @@ dot.node_attr.update(fontsize="6")
 dot.edge_attr.update(fontsize="6")
 dot.attr(ranksep="1.5", nodesep="1.0")
 salary, spine = get_salary(6, seniority)
-penwidth = 1 + 1 * ((spine - 13) / (57 - 13))
+penwidth = 0.25 + 0.75 * ((spine - 13) / (57 - 13))
 dot.node("Boss", f"""Director
 Level 6-{spine:02}""", shape="hexagon", penwidth=str(penwidth))
 
@@ -142,7 +142,7 @@ def create_workers(team, count, parent_nodes):
             role_label = f"{team_label} worker"
             color_map = {"FSS": "blue", "Systems": "red", "Content": "green"}
             color = color_map.get(team_label, "black")
-            penwidth = 1 + 3 * ((spine - 13) / (57 - 13))
+            penwidth = 0.25 + 0.75 * ((spine - 13) / (57 - 13))
             dot.node(role, f"""{role_label}
 Level {level}-{spine:02}""", color=color, penwidth=str(penwidth))
             parent = next(parent_nodes)
