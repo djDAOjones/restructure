@@ -136,7 +136,7 @@ def create_workers(team, count, parent_nodes):
             color = color_map.get(team_label, "black")
             penwidth = 1 + 2 * ((spine - 13) / (57 - 13))
             dot.node(role, f"""{role_label}
-Level {level}-{spine:02}""", color=color, style="dashed", penwidth=str(penwidth))
+Level {level}-{spine:02}""", color=color, penwidth=str(penwidth))
             parent = next(parent_nodes)
             dot.edge(parent, role, color=color)
             staff_rows.append({"Role": role_label, "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
