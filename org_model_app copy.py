@@ -2,6 +2,7 @@ import streamlit as st
 import graphviz
 import math
 import pandas as pd
+import itertools
 
 st.set_page_config(page_title="Org Chart", layout="centered")
 st.title("Restructure Chart")
@@ -17,25 +18,12 @@ df_salaries = {
 }
 
 SPINE_RANGES = {
-    2: list(range(13, 23)),
-    3: list(range(18, 28)),
-    4: list(range(23, 33)),
-    5: list(range(44, 54)),
-    6: list(range(54, 58))
+    2: list(range(13, 19)),
+    3: list(range(20, 28)),
+    4: list(range(27, 40)),
+    5: list(range(36, 45)),
+    6: list(range(45, 58))
 }
-
-COLOR_LOW = (16, 38, 59)
-COLOR_HIGH = (249, 129, 9)
-
-def interpolate_color(level, spine):
-    spine_range = SPINE_RANGES.get(level)
-    if not spine_range:
-        return "#999999"
-    t = (spine - spine_range[0]) / (spine_range[-1] - spine_range[0])
-    r = int(COLOR_LOW[0] + (COLOR_HIGH[0] - COLOR_LOW[0]) * t)
-    g = int(COLOR_LOW[1] + (COLOR_HIGH[1] - COLOR_LOW[1]) * t)
-    b = int(COLOR_LOW[2] + (COLOR_HIGH[2] - COLOR_LOW[2]) * t)
-    return f"#{r:02X}{g:02X}{b:02X}"
 
 def get_salary(level, seniority_pct):
     if level not in SPINE_RANGES:
@@ -45,59 +33,74 @@ def get_salary(level, seniority_pct):
     spine_point = spine_range[index]
     return df_salaries.get(spine_point, 0), spine_point
 
-# --- Sliders ---
-staff_scale = st.slider("Number of staff", 0, 100, 50, format="%d%%", label_visibility="visible", format_func=lambda x: f"{29 + int((100 - 29) * x / 100)}%")
-seniority = st.slider("Seniority afforded", 0, 100, 100, format="%d%%", label_visibility="visible", format_func=lambda x: f"{76 + int((100 - 76) * x / 100)}%")
+# --- Sliders and UI Controls ---
+staff_scale_input = st.slider("% of current staffing level", 32, 100, 100, format="%d%%")
+staff_scale = (staff_scale_input - 29) * (100 / (100 - 29))
+
+seniority_input = st.slider("Seniority afforded", 70, 100, 100, format="%d%%")  # default changed to 100%
+seniority = (seniority_input - 76) * (100 / (100 - 76))
+
+workers_per_mgr = st.slider("Learning technologists per manager", 5, 10, 10)
+show_content_as_team = st.checkbox("Learning content as separate team", value=False)
+
 chart_container = st.container()
 
-# --- Team Config ---
-st.markdown("<p style='font-size:0.9em; font-weight:600;'>Faculty and School Support (FSS)</p>", unsafe_allow_html=True)
-fss_mgr_default = int(1 + (3 * staff_scale / 100))
-fss_num_managers = st.slider("Number of Managers (FSS)", 1, 4, fss_mgr_default, key="fss_mgr_slider")
-fss_default = int(5 + (15 * staff_scale / 100))
-fss_num_staff = st.slider("Number of Staff (FSS)", 5, 20, fss_default, key="fss_slider")
-
-st.markdown("<p style='font-size:0.9em; font-weight:600;'>Learning Systems Team</p>", unsafe_allow_html=True)
-system_default = int(3 + (7 * staff_scale / 100))
-system_num_staff = st.slider("Number of Systems Workers", 3, 10, system_default, key="system_slider")
-
-st.markdown("<p style='font-size:0.9em; font-weight:600;'>Learning Content Team</p>", unsafe_allow_html=True)
-content_default = int(1 + (4 * staff_scale / 100))
-content_num_staff = st.slider("Number of Learning Content Workers", 1, 5, content_default, key="content_slider")
+# --- Team Counts ---
+fss_num_staff = int(5 + (15 * staff_scale / 100))
+system_num_staff = int(3 + (7 * staff_scale / 100))
+content_num_staff = min(3, int(1 + (4 * staff_scale / 100)))
+total_fss_workers = fss_num_staff + (0 if show_content_as_team else content_num_staff)
+fss_num_managers = max(1, round(total_fss_workers / workers_per_mgr))
 
 # --- Org Chart ---
 dot = graphviz.Digraph(engine="circo")
+dot.graph_attr.update(fontsize="6")
+dot.node_attr.update(fontsize="6")
+dot.edge_attr.update(fontsize="6")
 dot.attr(ranksep="1.5", nodesep="1.0")
-dot.node("Boss", "Director", shape="box", color=interpolate_color(6, SPINE_RANGES[6][-1]))
-
-fss_lead = "FSS_Lead"
-fss_label = " / ".join(["FSS Manager"] * fss_num_managers)
-dot.node(fss_lead, fss_label, color=interpolate_color(5, SPINE_RANGES[5][-1]))
-dot.edge("Boss", fss_lead)
-
-sys_mgr = "Sys_Manager"
-dot.node(sys_mgr, "Systems Manager", color=interpolate_color(5, SPINE_RANGES[5][-1]))
-dot.edge("Boss", sys_mgr)
-
-content_mgr = "LC_Manager"
-dot.node(content_mgr, "Content Manager", color=interpolate_color(5, SPINE_RANGES[5][-1]))
-dot.edge("Boss", content_mgr)
+salary, spine = get_salary(6, seniority)
+director_penwidth = 0.25 + 3.75 * ((spine - 13) / (57 - 13))
+dot.node("Boss", f"""Director
+Level 6-{spine:02}""", shape="hexagon", penwidth=str(director_penwidth))
 
 # --- Staffing Table Generation ---
 staff_rows = []
 
-salary, spine = get_salary(6, seniority)
 staff_rows.append({"Role": "Director", "Level": 6, "Spine Point": spine, "Salary": salary, "Team": "0_Director"})
 
+# FSS Managers as individual nodes
+fss_mgr_nodes = []
 for i in range(fss_num_managers):
+    mgr_id = f"FSS_Manager_{i+1}"
     salary, spine = get_salary(5, seniority)
-    staff_rows.append({"Role": "FSS Manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "1_FSS"})
-
-for role in ["Systems Manager", "Content Manager"]:
+    penwidth = 0.25 + 3.75 * ((spine - 17) / (53 - 17))
+    dot.node(mgr_id, f"""FSS manager
+Level 5-{spine:02}""", shape="box", color="blue", penwidth=str(penwidth))
+    dot.edge("Boss", mgr_id, color="blue", penwidth="2")
     salary, spine = get_salary(5, seniority)
-    team = "2_Systems" if "Systems" in role else "3_Content"
-    staff_rows.append({"Role": role, "Level": 5, "Spine Point": spine, "Salary": salary, "Team": team})
+    staff_rows.append({"Role": "FSS manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "1_FSS"})
+    fss_mgr_nodes.append(mgr_id)
 
+# Systems team
+salary, spine = get_salary(5, seniority)
+penwidth = 0.25 + 3.75 * ((spine - 17) / (53 - 17))
+dot.node("Sys_Manager", f"""Systems manager
+Level 5-{spine:02}""", shape="box", color="red", penwidth=str(penwidth))
+dot.edge("Boss", "Sys_Manager", color="red", penwidth="2")
+salary, spine = get_salary(5, seniority)
+staff_rows.append({"Role": "Systems manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "2_Systems"})
+
+# Content team manager (if shown separately)
+if show_content_as_team:
+    salary, spine = get_salary(5, seniority)
+    penwidth = 0.25 + 3.75 * ((spine - 17) / (53 - 17))
+    dot.node("Content_Manager", f"""Content manager
+Level 5-{spine:02}""", shape="box", color="green", penwidth=str(penwidth))
+    dot.edge("Boss", "Content_Manager", color="green", penwidth="2")
+    salary, spine = get_salary(5, seniority)
+    staff_rows.append({"Role": "Content manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "3_Content"})
+
+# --- Worker allocation helper ---
 def calc_worker_allocation(seniority_pct):
     low_mix = {4: 0.25, 3: 0.5, 2: 0.25}
     high_mix = {4: 1.0, 3: 0.0, 2: 0.0}
@@ -108,20 +111,79 @@ def calc_worker_allocation(seniority_pct):
 
 allocations = calc_worker_allocation(seniority)
 
-for level, proportion in allocations:
-    for team, parent, count in [
-        ("1_FSS", fss_lead, fss_num_staff),
-        ("2_Systems", sys_mgr, system_num_staff),
-        ("3_Content", content_mgr, content_num_staff)
-    ]:
-        for i in range(math.ceil(count * proportion)):
+# --- Create and assign workers ---
+merged_content_workers = []
+worker_counter = 0
+
+def create_workers(team, count, parent_nodes):
+    global worker_counter
+    local_workers = []
+    assigned = 0
+    level_counts = []
+
+    # Precompute exact worker counts per level using proportions
+    for level, proportion in allocations:
+        exact = count * proportion
+        level_counts.append((level, exact))
+
+    # Sort by descending exact so larger buckets are filled first
+    level_counts.sort(key=lambda x: -x[1])
+
+    for level, exact in level_counts:
+        n = min(int(round(exact)), count - assigned)
+        for _ in range(n):
+            parent = next(parent_nodes)
             salary, spine = get_salary(level, seniority)
-            label = f"{team}_Staff_{level}_{i+1}"
-            team_name = team.split('_')[1]
-            color = interpolate_color(level, spine)
-            dot.node(label, f"{team_name} Staff\nLevel {level}", color=color)
-            dot.edge(parent, label, color=color)
-            staff_rows.append({"Role": f"{team_name} Staff", "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
+            role = f"{team}_Worker_{worker_counter}"
+            worker_counter += 1
+            is_merged_content = (
+                not show_content_as_team and team == "3_Content"
+            )
+            team_label = "Content" if is_merged_content else team.split('_')[1]
+            role_label = f"{team_label} worker"
+            color_map = {"FSS": "blue", "Systems": "red", "Content": "green"}
+            color = color_map.get(team_label, "black")
+            penwidth = 0.25 + 3.75 * ((spine - 13) / (57 - 13))
+            if is_merged_content:
+                merged_content_workers.append((role, color, level, spine, role_label))
+            else:
+                dot.node(role, f"""{role_label}
+Level {level}-{spine:02}""", color=color, penwidth=str(penwidth))
+            if not is_merged_content:
+                dot.edge(parent, role, color=color, style="dashed")
+            staff_rows.append({"Role": role_label, "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
+            local_workers.append(role)
+            assigned += 1
+            if assigned >= count:
+                break
+
+    return local_workers
+
+# --- Create Workers ---
+
+# Round-robin distribution to FSS managers
+fss_mgr_cycle = itertools.cycle(fss_mgr_nodes)
+create_workers("1_FSS", fss_num_staff, fss_mgr_cycle)
+
+# Systems workers
+create_workers("2_Systems", system_num_staff, itertools.cycle(["Sys_Manager"]))
+
+# Content workers: integrate with FSS or show separately
+if show_content_as_team:
+    create_workers("3_Content", content_num_staff, itertools.cycle(["Content_Manager"]))
+else:
+    create_workers("3_Content", content_num_staff, itertools.cycle([fss_mgr_nodes[0]]))
+
+# Inject merged content worker edges together in a cluster
+if not show_content_as_team and merged_content_workers:
+    with dot.subgraph(name="cluster_merged_content") as c:
+        c.attr(label="Merged Content Workers")
+        c.attr(style="dashed")
+        for role, color, level, spine, role_label in merged_content_workers:
+            penwidth = 0.25 + 3.75 * ((spine - 13) / (57 - 13))
+            c.node(role, f"""{role_label}
+Level {level}-{spine:02}""", color=color, penwidth=str(penwidth))
+            c.edge(fss_mgr_nodes[0], role, color=color, style="dashed")
 
 # --- Chart Output ---
 total_cost = sum(row["Salary"] for row in staff_rows)
@@ -145,4 +207,4 @@ if staff_rows:
 
     df_table.sort_values(by=["team", "role name", "level", "spline"], inplace=True)
     df_table.drop(columns=["team"], inplace=True)
-    st.table(df_table)
+    st.dataframe(df_table, hide_index=True)
