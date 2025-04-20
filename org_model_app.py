@@ -84,7 +84,7 @@ Level 5-{spine:02}""", shape="box", color="blue", penwidth=str(penwidth))
 
 # Systems team
 salary, spine = get_salary(5, seniority)
-penwidth = 1 + 7 * ((spine - 13) / (57 - 13))
+penwidth = 1 + 1 * ((spine - 13) / (57 - 13))
 dot.node("Sys_Manager", f"""Systems manager
 Level 5-{spine:02}""", shape="box", color="red", penwidth=str(penwidth))
 dot.edge("Boss", "Sys_Manager", color="red", penwidth="2")
@@ -146,7 +146,7 @@ def create_workers(team, count, parent_nodes):
             dot.node(role, f"""{role_label}
 Level {level}-{spine:02}""", color=color, penwidth=str(penwidth))
             parent = next(parent_nodes)
-            dot.edge(parent, role, color=color)
+            dot.edge(parent, role, color=color, style="dashed")
             staff_rows.append({"Role": role_label, "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
             local_workers.append(role)
             assigned += 1
