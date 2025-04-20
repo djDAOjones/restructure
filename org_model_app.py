@@ -59,7 +59,7 @@ dot.node_attr.update(fontsize="6")
 dot.edge_attr.update(fontsize="6")
 dot.attr(ranksep="1.5", nodesep="1.0")
 salary, spine = get_salary(6, seniority)
-director_penwidth = 0.25 + 3.75 * ((spine - 13) / (57 - 13))
+director_penwidth = 0.25 + 3.75 * ((spine - 17) / (53 - 17))
 dot.node("Boss", f"""Director
 Level 6-{spine:02}""", shape="hexagon", penwidth=str(director_penwidth))
 
@@ -83,7 +83,7 @@ Level 5-{spine:02}""", shape="box", color="blue", penwidth=str(penwidth))
 
 # Systems team
 salary, spine = get_salary(5, seniority)
-penwidth = 0.25 + 3.75 * ((spine - 17) / (53 - 17))
+penwidth = 1 + 1 * ((spine - 13) / (57 - 13))
 dot.node("Sys_Manager", f"""Systems manager
 Level 5-{spine:02}""", shape="box", color="red", penwidth=str(penwidth))
 dot.edge("Boss", "Sys_Manager", color="red", penwidth="2")
