@@ -143,8 +143,10 @@ def create_workers(team, count, parent_nodes):
             color_map = {"FSS": "blue", "Systems": "red", "Content": "green"}
             color = color_map.get(team_label, "black")
             penwidth = 0.25 + 3.75 * ((spine - 13) / (57 - 13))
-            dot.node(role, f"""{role_label}
-Level {level}-{spine:02}""", color=color, penwidth=str(penwidth))
+            if is_merged_content:
+                merged_content_workers.append((role, color, level, spine, role_label))
+            else:
+                dot.node(role, f"""{role_label}\nLevel {level}-{spine:02}""", color=color, penwidth=str(penwidth))
             parent = fss_mgr_nodes[0] if team == "3_Content" and not show_content_as_team else next(parent_nodes)
             if is_merged_content:
                 merged_content_workers.append((role, color))
@@ -163,5 +165,7 @@ if not show_content_as_team and merged_content_workers:
     with dot.subgraph(name="cluster_merged_content") as c:
         c.attr(label="Merged Content Workers")
         c.attr(style="dashed")
-        for role, color in merged_content_workers:
+        for role, color, level, spine, role_label in merged_content_workers:
+            penwidth = 0.25 + 3.75 * ((spine - 13) / (57 - 13))
+            c.node(role, f"""{role_label}\nLevel {level}-{spine:02}""", color=color, penwidth=str(penwidth))
             c.edge(fss_mgr_nodes[0], role, color=color, style="dashed")
