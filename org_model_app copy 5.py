@@ -41,7 +41,7 @@ seniority_input = st.slider("Seniority afforded", 70, 100, 100, format="%d%%")  
 seniority = (seniority_input - 76) * (100 / (100 - 76))
 
 workers_per_mgr = st.slider("Workers per FSS manager", 5, 10, 10)
-show_content_as_team = st.checkbox("Show Learning Content as Separate Team", value=True)
+show_content_as_team = st.checkbox("Show Learning Content as Separate Team", value=False)
 
 chart_container = st.container()
 
@@ -180,6 +180,6 @@ if staff_rows:
 
     df_table.sort_values(by=["team", "role name", "level", "spline"], inplace=True)
     df_table.drop(columns=["team"], inplace=True)
-    st.table(df_table.reset_index(drop=True))
+    st.table(df_table)
 
 # test push
