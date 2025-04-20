@@ -34,10 +34,10 @@ def get_salary(level, seniority_pct):
     return df_salaries.get(spine_point, 0), spine_point
 
 # --- Sliders and UI Controls ---
-staff_scale_input = st.slider("% of current staffing level", 29, 100, 100, format="%d%%")
+staff_scale_input = st.slider("% of current staffing level", 32, 100, 100, format="%d%%")
 staff_scale = (staff_scale_input - 29) * (100 / (100 - 29))
 
-seniority_input = st.slider("Seniority afforded", 76, 100, 100, format="%d%%")  # default changed to 100%
+seniority_input = st.slider("Seniority afforded", 70, 100, 100, format="%d%%")  # default changed to 100%
 seniority = (seniority_input - 76) * (100 / (100 - 76))
 
 workers_per_mgr = st.slider("Workers per FSS manager", 5, 10, 10)
@@ -73,7 +73,7 @@ for i in range(fss_num_managers):
     mgr_id = f"FSS_Manager_{i+1}"
     salary, spine = get_salary(5, seniority)
     dot.node(mgr_id, f"""FSS manager\nLevel 5-{spine:02}""", shape="box", color="blue")
-    dot.edge("Boss", mgr_id, color="blue")
+    dot.edge("Boss", mgr_id, color="blue", penwidth="2")
     salary, spine = get_salary(5, seniority)
     staff_rows.append({"Role": "FSS manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "1_FSS"})
     fss_mgr_nodes.append(mgr_id)
@@ -81,7 +81,7 @@ for i in range(fss_num_managers):
 # Systems team
 salary, spine = get_salary(5, seniority)
 dot.node("Sys_Manager", f"""Systems manager\nLevel 5-{spine:02}""", shape="box", color="red")
-dot.edge("Boss", "Sys_Manager", color="red")
+dot.edge("Boss", "Sys_Manager", color="red", penwidth="2")
 salary, spine = get_salary(5, seniority)
 staff_rows.append({"Role": "Systems manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "2_Systems"})
 
@@ -89,7 +89,7 @@ staff_rows.append({"Role": "Systems manager", "Level": 5, "Spine Point": spine, 
 if show_content_as_team:
     salary, spine = get_salary(5, seniority)
     dot.node("Content_Manager", f"""Content manager\nLevel 5-{spine:02}""", shape="box", color="green")
-    dot.edge("Boss", "Content_Manager", color="green")
+    dot.edge("Boss", "Content_Manager", color="green", penwidth="2")
     salary, spine = get_salary(5, seniority)
     staff_rows.append({"Role": "Content manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "3_Content"})
 
@@ -131,7 +131,8 @@ def create_workers(team, count, parent_nodes):
             role_label = f"{team_label} worker"
             color_map = {"FSS": "blue", "Systems": "red", "Content": "green"}
             color = color_map.get(team_label, "black")
-            dot.node(role, f"{role_label}\nLevel {level}-{spine:02}", color=color)
+            dot.node(role, f"{role_label}
+Level {level}-{spine:02}", color=color)
             parent = next(parent_nodes)
             dot.edge(parent, role, color=color)
             staff_rows.append({"Role": role_label, "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
