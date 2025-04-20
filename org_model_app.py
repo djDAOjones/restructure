@@ -54,9 +54,11 @@ fss_num_managers = max(1, round(total_fss_workers / workers_per_mgr))
 
 # --- Org Chart ---
 dot = graphviz.Digraph(engine="circo")
+dot.attr(graph_attr={"fontsize": "24"}, node_attr={"fontsize": "24"}, edge_attr={"fontsize": "24"})
 dot.attr(ranksep="1.5", nodesep="1.0")
 salary, spine = get_salary(6, seniority)
-dot.node("Boss", f"Director\nLevel 6-{spine:02}", shape="box")
+dot.node("Boss", f"Director
+Level 6-{spine:02}", shape="hexagon")
 
 # --- Staffing Table Generation ---
 staff_rows = []
@@ -69,7 +71,8 @@ fss_mgr_nodes = []
 for i in range(fss_num_managers):
     mgr_id = f"FSS_Manager_{i+1}"
     salary, spine = get_salary(5, seniority)
-    dot.node(mgr_id, f"FSS manager\nLevel 5-{spine:02}", color="blue")
+    dot.node(mgr_id, f"FSS manager
+Level 5-{spine:02}", shape="box", color="blue")
     dot.edge("Boss", mgr_id, color="blue")
     salary, spine = get_salary(5, seniority)
     staff_rows.append({"Role": "FSS manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "1_FSS"})
@@ -77,7 +80,8 @@ for i in range(fss_num_managers):
 
 # Systems team
 salary, spine = get_salary(5, seniority)
-dot.node("Sys_Manager", f"Systems manager\nLevel 5-{spine:02}", color="red")
+dot.node("Sys_Manager", f"Systems manager
+Level 5-{spine:02}", shape="box", color="red")
 dot.edge("Boss", "Sys_Manager", color="red")
 salary, spine = get_salary(5, seniority)
 staff_rows.append({"Role": "Systems manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "2_Systems"})
@@ -85,7 +89,8 @@ staff_rows.append({"Role": "Systems manager", "Level": 5, "Spine Point": spine, 
 # Content team manager (if shown separately)
 if show_content_as_team:
     salary, spine = get_salary(5, seniority)
-    dot.node("Content_Manager", f"Content manager\nLevel 5-{spine:02}", color="green")
+    dot.node("Content_Manager", f"Content manager
+Level 5-{spine:02}", shape="box", color="green")
     dot.edge("Boss", "Content_Manager", color="green")
     salary, spine = get_salary(5, seniority)
     staff_rows.append({"Role": "Content manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "3_Content"})
@@ -159,4 +164,3 @@ if staff_rows:
     df_table.sort_values(by=["team", "role name", "level", "spline"], inplace=True)
     df_table.drop(columns=["team"], inplace=True)
     st.table(df_table)
-
