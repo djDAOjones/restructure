@@ -146,10 +146,10 @@ def create_workers(team, count, parent_nodes):
             if is_merged_content:
                 merged_content_workers.append((role, color, level, spine, role_label))
             else:
-                dot.node(role, f"""{role_label}\nLevel {level}-{spine:02}""", color=color, penwidth=str(penwidth))
+                dot.node(role, f"""{role_label}
+Level {level}-{spine:02}""", color=color, penwidth=str(penwidth))
             parent = fss_mgr_nodes[0] if team == "3_Content" and not show_content_as_team else next(parent_nodes)
-            if is_merged_content:
-                merged_content_workers.append((role, color))
+            
             else:
                 dot.edge(parent, role, color=color, style="dashed")
             staff_rows.append({"Role": role_label, "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
@@ -167,5 +167,6 @@ if not show_content_as_team and merged_content_workers:
         c.attr(style="dashed")
         for role, color, level, spine, role_label in merged_content_workers:
             penwidth = 0.25 + 3.75 * ((spine - 13) / (57 - 13))
-            c.node(role, f"""{role_label}\nLevel {level}-{spine:02}""", color=color, penwidth=str(penwidth))
+            c.node(role, f"""{role_label}
+Level {level}-{spine:02}""", color=color, penwidth=str(penwidth))
             c.edge(fss_mgr_nodes[0], role, color=color, style="dashed")
