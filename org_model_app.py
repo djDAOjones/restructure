@@ -59,7 +59,11 @@ dot.attr(node={"fontsize": "24"})
 dot.attr(edge={"fontsize": "24"})
 dot.attr(ranksep="1.5", nodesep="1.0")
 salary, spine = get_salary(6, seniority)
-dot.node("Boss", f"""Director\nLevel 6-{spine:02}""", shape="hexagon")\n\n# --- Staffing Table Generation ---\nstaff_rows = []\n
+dot.node("Boss", f"""Director\nLevel 6-{spine:02}""", shape="hexagon")
+
+# --- Staffing Table Generation ---
+staff_rows = []
+
 salary, spine = get_salary(6, seniority)
 staff_rows.append({"Role": "Director", "Level": 6, "Spine Point": spine, "Salary": salary, "Team": "0_Director"})
 
@@ -159,4 +163,3 @@ if staff_rows:
     df_table.drop(columns=["team"], inplace=True)
     st.table(df_table)
 
-# test push
