@@ -59,7 +59,7 @@ dot.node_attr.update(fontsize="6")
 dot.edge_attr.update(fontsize="6")
 dot.attr(ranksep="1.5", nodesep="1.0")
 salary, spine = get_salary(6, seniority)
-director_dot.node("Boss", f"""Director
+dot.node("Boss", f"""Director
 Level 6-{spine:02}""", shape="hexagon", )
 
 # --- Staffing Table Generation ---
