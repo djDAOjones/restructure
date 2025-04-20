@@ -71,8 +71,7 @@ fss_mgr_nodes = []
 for i in range(fss_num_managers):
     mgr_id = f"FSS_Manager_{i+1}"
     salary, spine = get_salary(5, seniority)
-    dot.node(mgr_id, f"FSS manager
-Level 5-{spine:02}", shape="box", color="blue")
+    dot.node(mgr_id, f"""FSS manager\nLevel 5-{spine:02}""", shape="box", color="blue")
     dot.edge("Boss", mgr_id, color="blue")
     salary, spine = get_salary(5, seniority)
     staff_rows.append({"Role": "FSS manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "1_FSS"})
@@ -80,8 +79,7 @@ Level 5-{spine:02}", shape="box", color="blue")
 
 # Systems team
 salary, spine = get_salary(5, seniority)
-dot.node("Sys_Manager", f"Systems manager
-Level 5-{spine:02}", shape="box", color="red")
+dot.node("Sys_Manager", f"""Systems manager\nLevel 5-{spine:02}""", shape="box", color="red")
 dot.edge("Boss", "Sys_Manager", color="red")
 salary, spine = get_salary(5, seniority)
 staff_rows.append({"Role": "Systems manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "2_Systems"})
@@ -89,8 +87,7 @@ staff_rows.append({"Role": "Systems manager", "Level": 5, "Spine Point": spine, 
 # Content team manager (if shown separately)
 if show_content_as_team:
     salary, spine = get_salary(5, seniority)
-    dot.node("Content_Manager", f"Content manager
-Level 5-{spine:02}", shape="box", color="green")
+    dot.node("Content_Manager", f"""Content manager\nLevel 5-{spine:02}""", shape="box", color="green")
     dot.edge("Boss", "Content_Manager", color="green")
     salary, spine = get_salary(5, seniority)
     staff_rows.append({"Role": "Content manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "3_Content"})
