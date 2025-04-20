@@ -59,7 +59,7 @@ dot.node_attr.update(fontsize="6")
 dot.edge_attr.update(fontsize="6")
 dot.attr(ranksep="1.5", nodesep="1.0")
 salary, spine = get_salary(6, seniority)
-director_penwidth = 0.25 + 3.75 * ((spine - 17) / (53 - 17))
+director_penwidth = 0.25 + 3.75 * ((spine - 13) / (57 - 13))
 dot.node("Boss", f"""Director
 Level 6-{spine:02}""", shape="hexagon", penwidth=str(director_penwidth))
 
