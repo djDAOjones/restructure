@@ -168,3 +168,27 @@ if not show_content_as_team and merged_content_workers:
             c.node(role, f"""{role_label}
 Level {level}-{spine:02}""", color=color, penwidth=str(penwidth))
             c.edge(fss_mgr_nodes[0], role, color=color, style="dashed")
+
+# --- Chart Output ---
+total_cost = sum(row["Salary"] for row in staff_rows)
+with chart_container:
+    st.markdown(f"<p style='font-size:0.9em; font-weight:600;'>Total Estimated Cost: £{total_cost:,.0f}</p>", unsafe_allow_html=True)
+    st.graphviz_chart(dot)
+
+# --- Staff Listing Table ---
+for row in staff_rows:
+    row["Salary"] = f"£{row['Salary']:,.0f}"
+
+if staff_rows:
+    st.markdown("<p style='font-size:0.9em; font-weight:600;'>Full Staff Listing</p>", unsafe_allow_html=True)
+    df_table = pd.DataFrame([{
+        "role name": row["Role"],
+        "team": row["Team"],
+        "level": row["Level"],
+        "spline": row["Spine Point"],
+        "cost": row["Salary"]
+    } for row in staff_rows])
+
+    df_table.sort_values(by=["team", "role name", "level", "spline"], inplace=True)
+    df_table.drop(columns=["team"], inplace=True)
+    st.dataframe(df_table, hide_index=True)
