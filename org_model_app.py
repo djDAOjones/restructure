@@ -140,7 +140,7 @@ def create_workers(team, count, parent_nodes):
             role_label = f"{team_label} worker"
             color_map = {"FSS": "blue", "Systems": "red", "Content": "green"}
             color = color_map.get(team_label, "black")
-            penwidth = 0.25 + 0.75 * ((spine - 13) / (57 - 13))
+            penwidth = 0.25 + 3.75 * ((spine - 17) / (53 - 17))
             dot.node(role, f"""{role_label}
 Level {level}-{spine:02}""", color=color, penwidth=str(penwidth))
             parent = next(parent_nodes)
