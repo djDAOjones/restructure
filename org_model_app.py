@@ -156,8 +156,7 @@ create_workers("1_FSS", fss_num_staff, fss_mgr_cycle)
 if show_content_as_team:
     create_workers("3_Content", content_num_staff, itertools.cycle(["Content_Manager"]))
 else:
-    create_workers("1_FSS", content_num_staff, itertools.cycle([fss_mgr_nodes[0]]))  # maintain green color
-    team_label = "Content"
+    create_workers("3_Content", content_num_staff, itertools.cycle([fss_mgr_nodes[0]]))
 
 # Systems workers
 create_workers("2_Systems", system_num_staff, itertools.cycle(["Sys_Manager"]))
