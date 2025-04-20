@@ -57,8 +57,8 @@ dot = graphviz.Digraph(engine="circo")
 dot.attr(graph_attr={"fontsize": "24"}, node_attr={"fontsize": "24"}, edge_attr={"fontsize": "24"})
 dot.attr(ranksep="1.5", nodesep="1.0")
 salary, spine = get_salary(6, seniority)
-dot.node("Boss", f"Director
-Level 6-{spine:02}", shape="hexagon")
+dot.node("Boss", f"""Director
+Level 6-{spine:02}""", shape="hexagon")
 
 # --- Staffing Table Generation ---
 staff_rows = []
