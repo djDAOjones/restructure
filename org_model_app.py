@@ -138,18 +138,3 @@ def create_workers(team, count, parent_nodes):
                 not show_content_as_team and team == "1_FSS" and assigned >= fss_num_staff
             )
             team_label = "Content" if is_merged_content else team.split('_')[1]
-            role_label = f"{team_label} worker"
-            color_map = {"FSS": "blue", "Systems": "red", "Content": "green"}
-            color = color_map.get(team_label, "black")
-            penwidth = 0.25 + 3.75 * ((spine - 13) / (57 - 13))
-            dot.node(role, f"""{role_label}
-Level {level}-{spine:02}""", color=color, penwidth=str(penwidth))
-            parent = next(parent_nodes)
-            dot.edge(parent, role, color=color, style="dashed")
-            staff_rows.append({"Role": role_label, "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
-            local_workers.append(role)
-            assigned += 1
-            if assigned >= count:
-                break
-
-    return local_workers
