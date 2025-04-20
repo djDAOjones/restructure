@@ -112,6 +112,7 @@ def calc_worker_allocation(seniority_pct):
 allocations = calc_worker_allocation(seniority)
 
 # --- Create and assign workers ---
+merged_content_workers = []
 worker_counter = 0
 
 def create_workers(team, count, parent_nodes):
@@ -145,7 +146,10 @@ def create_workers(team, count, parent_nodes):
             dot.node(role, f"""{role_label}
 Level {level}-{spine:02}""", color=color, penwidth=str(penwidth))
             parent = fss_mgr_nodes[0] if team == "3_Content" and not show_content_as_team else next(parent_nodes)
-            dot.edge(parent, role, color=color, style="dashed")
+            if is_merged_content:
+                merged_content_workers.append((role, color))
+            else:
+                dot.edge(parent, role, color=color, style="dashed")
             staff_rows.append({"Role": role_label, "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
             local_workers.append(role)
             assigned += 1
@@ -153,3 +157,11 @@ Level {level}-{spine:02}""", color=color, penwidth=str(penwidth))
                 break
 
     return local_workers
+
+# Inject merged content worker edges together in a cluster
+if not show_content_as_team and merged_content_workers:
+    with dot.subgraph(name="cluster_merged_content") as c:
+        c.attr(label="Merged Content Workers")
+        c.attr(style="dashed")
+        for role, color in merged_content_workers:
+            c.edge(fss_mgr_nodes[0], role, color=color, style="dashed")
