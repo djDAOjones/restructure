@@ -134,8 +134,10 @@ def create_workers(team, count, parent_nodes):
             salary, spine = get_salary(level, seniority)
             role = f"{team}_Worker_{worker_counter}"
             worker_counter += 1
-            if not show_content_as_team and team == "1_FSS" and role.startswith("1_FSS_Worker") and worker_counter > (fss_num_staff - 1):
-                team_label = "Content"
+            is_merged_content = (
+    not show_content_as_team and team == "1_FSS" and assigned >= fss_num_staff
+)
+team_label = "Content" if is_merged_content else team.split('_')[1]
             else:
                 team_label = team.split('_')[1]
             role_label = f"{team_label} worker"
