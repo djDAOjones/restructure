@@ -75,7 +75,7 @@ for i in range(fss_num_managers):
     salary, spine = get_salary(5, seniority)
     penwidth = 0.25 + 3.75 * ((spine - 17) / (53 - 17))
     dot.node(mgr_id, f"""FSS manager
-Level 5-{spine:02}""", shape="box", color="blue", penwidth=str(penwidth))
+Level 5-{spine:02}""", shape="box", style="rounded", color="blue", penwidth=str(penwidth))
     dot.edge("Boss", mgr_id, color="blue", penwidth="2")
     salary, spine = get_salary(5, seniority)
     staff_rows.append({"Role": "FSS manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "1_FSS"})
@@ -85,7 +85,7 @@ Level 5-{spine:02}""", shape="box", color="blue", penwidth=str(penwidth))
 salary, spine = get_salary(5, seniority)
 penwidth = 0.25 + 3.75 * ((spine - 17) / (53 - 17))
 dot.node("Sys_Manager", f"""Systems manager
-Level 5-{spine:02}""", shape="box", color="red", penwidth=str(penwidth))
+Level 5-{spine:02}""", shape="box", style="rounded", color="red", penwidth=str(penwidth))
 dot.edge("Boss", "Sys_Manager", color="red", penwidth="2")
 salary, spine = get_salary(5, seniority)
 staff_rows.append({"Role": "Systems manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "2_Systems"})
@@ -95,7 +95,7 @@ if show_content_as_team:
     salary, spine = get_salary(5, seniority)
     penwidth = 0.25 + 3.75 * ((spine - 17) / (53 - 17))
     dot.node("Content_Manager", f"""Content manager
-Level 5-{spine:02}""", shape="box", color="green", penwidth=str(penwidth))
+Level 5-{spine:02}""", shape="box", style="rounded", color="green", penwidth=str(penwidth))
     dot.edge("Boss", "Content_Manager", color="green", penwidth="2")
     salary, spine = get_salary(5, seniority)
     staff_rows.append({"Role": "Content manager", "Level": 5, "Spine Point": spine, "Salary": salary, "Team": "3_Content"})
