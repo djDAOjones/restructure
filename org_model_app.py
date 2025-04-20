@@ -127,7 +127,10 @@ def create_workers(team, count, parent_nodes):
             salary, spine = get_salary(level, seniority)
             role = f"{team}_Worker_{worker_counter}"
             worker_counter += 1
-            team_label = team.split('_')[1] if not (not show_content_as_team and team == "1_FSS") else "Content"
+            if not show_content_as_team and team == "1_FSS" and role.startswith("3_Content"):
+                team_label = "Content"
+            else:
+                team_label = team.split('_')[1]
             role_label = f"{team_label} worker"
             color_map = {"FSS": "blue", "Systems": "red", "Content": "green"}
             color = color_map.get(team_label, "black")
