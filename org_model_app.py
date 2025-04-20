@@ -138,8 +138,6 @@ def create_workers(team, count, parent_nodes):
     not show_content_as_team and team == "1_FSS" and assigned >= fss_num_staff
 )
 team_label = "Content" if is_merged_content else team.split('_')[1]
-            else:
-                team_label = team.split('_')[1]
             role_label = f"{team_label} worker"
             color_map = {"FSS": "blue", "Systems": "red", "Content": "green"}
             color = color_map.get(team_label, "black")
