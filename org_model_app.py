@@ -134,7 +134,63 @@ def create_workers(team, count, parent_nodes):
             salary, spine = get_salary(level, seniority)
             role = f"{team}_Worker_{worker_counter}"
             worker_counter += 1
-            is_merged_content = (
-                not show_content_as_team and team == "1_FSS" and assigned >= fss_num_staff
-            )
-            team_label = "Content" if is_merged_content else team.split('_')[1]
+            if not show_content_as_team and team == "1_FSS" and role.startswith("1_FSS_Worker") and worker_counter > (fss_num_staff - 1):
+                team_label = "Content"
+            else:
+                team_label = team.split('_')[1]
+            role_label = f"{team_label} worker"
+            color_map = {"FSS": "blue", "Systems": "red", "Content": "green"}
+            color = color_map.get(team_label, "black")
+            penwidth = 0.25 + 3.75 * ((spine - 17) / (53 - 17))
+            dot.node(role, f"""{role_label}
+Level {level}-{spine:02}""", color=color, penwidth=str(penwidth))
+            parent = next(parent_nodes)
+            dot.edge(parent, role, color=color, style="dashed")
+            staff_rows.append({"Role": role_label, "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
+            local_workers.append(role)
+            assigned += 1
+            if assigned >= count:
+                break
+        if assigned >= count:
+            break
+
+    return local_workers
+
+# Round-robin distribution to FSS managers
+fss_mgr_cycle = itertools.cycle(fss_mgr_nodes)
+create_workers("1_FSS", fss_num_staff, fss_mgr_cycle)
+
+# Content workers: integrate with FSS or show separately
+if show_content_as_team:
+    create_workers("3_Content", content_num_staff, itertools.cycle(["Content_Manager"]))
+else:
+    create_workers("3_Content", content_num_staff, itertools.cycle([fss_mgr_nodes[0]]))
+
+# Systems workers
+create_workers("2_Systems", system_num_staff, itertools.cycle(["Sys_Manager"]))
+
+# --- Chart Output ---
+total_cost = sum(row["Salary"] for row in staff_rows)
+with chart_container:
+    st.markdown(f"<p style='font-size:0.9em; font-weight:600;'>Total Estimated Cost: £{total_cost:,.0f}</p>", unsafe_allow_html=True)
+    st.graphviz_chart(dot)
+
+# --- Staff Listing Table ---
+for row in staff_rows:
+    row["Salary"] = f"£{row['Salary']:,.0f}"
+
+if staff_rows:
+    st.markdown("<p style='font-size:0.9em; font-weight:600;'>Full Staff Listing</p>", unsafe_allow_html=True)
+    df_table = pd.DataFrame([{
+        "role name": row["Role"],
+        "team": row["Team"],
+        "level": row["Level"],
+        "spline": row["Spine Point"],
+        "cost": row["Salary"]
+    } for row in staff_rows])
+
+    df_table.sort_values(by=["team", "role name", "level", "spline"], inplace=True)
+    df_table.drop(columns=["team"], inplace=True)
+    st.dataframe(df_table, hide_index=True)
+
+
