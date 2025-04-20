@@ -150,7 +150,6 @@ def create_workers(team, count, parent_nodes):
 Level {level}-{spine:02}""", color=color, penwidth=str(penwidth))
             if not is_merged_content:
                 dot.edge(parent, role, color=color, style="dashed")
-                dot.edge(parent, role, color=color, style="dashed")
             staff_rows.append({"Role": role_label, "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
             local_workers.append(role)
             assigned += 1
