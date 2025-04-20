@@ -131,8 +131,8 @@ def create_workers(team, count, parent_nodes):
             role_label = f"{team_label} worker"
             color_map = {"FSS": "blue", "Systems": "red", "Content": "green"}
             color = color_map.get(team_label, "black")
-            dot.node(role, f"{role_label}
-Level {level}-{spine:02}", color=color)
+            dot.node(role, f"""{role_label}
+Level {level}-{spine:02}""", color=color)
             parent = next(parent_nodes)
             dot.edge(parent, role, color=color)
             staff_rows.append({"Role": role_label, "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
