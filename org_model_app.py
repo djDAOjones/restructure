@@ -54,9 +54,9 @@ fss_num_managers = max(1, round(total_fss_workers / workers_per_mgr))
 
 # --- Org Chart ---
 dot = graphviz.Digraph(engine="circo")
-dot.graph_attr.update(fontsize="48")
-dot.node_attr.update(fontsize="48")
-dot.edge_attr.update(fontsize="48")
+dot.graph_attr.update(fontsize="6")
+dot.node_attr.update(fontsize="6")
+dot.edge_attr.update(fontsize="6")
 dot.attr(ranksep="1.5", nodesep="1.0")
 salary, spine = get_salary(6, seniority)
 dot.node("Boss", f"""Director\nLevel 6-{spine:02}""", shape="hexagon")
