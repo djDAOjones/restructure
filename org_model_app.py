@@ -46,7 +46,7 @@ show_content_as_team = st.checkbox("Show Learning Content as Separate Team", val
 chart_container = st.container()
 
 # --- Team Counts ---
-fss_num_staff = int(5 + (25 * staff_scale / 100))
+fss_num_staff = int(5 + (15 * staff_scale / 100))
 system_num_staff = int(3 + (7 * staff_scale / 100))
 content_num_staff = min(3, int(1 + (4 * staff_scale / 100)))
 total_fss_workers = fss_num_staff + (0 if show_content_as_team else content_num_staff)
@@ -159,3 +159,4 @@ if staff_rows:
     df_table.sort_values(by=["team", "role name", "level", "spline"], inplace=True)
     df_table.drop(columns=["team"], inplace=True)
     st.table(df_table)
+
