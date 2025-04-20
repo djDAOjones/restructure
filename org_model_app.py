@@ -144,7 +144,7 @@ def create_workers(team, count, parent_nodes):
             penwidth = 0.25 + 3.75 * ((spine - 13) / (57 - 13))
             dot.node(role, f"""{role_label}
 Level {level}-{spine:02}""", color=color, penwidth=str(penwidth))
-            parent = next(parent_nodes)
+            parent = fss_mgr_nodes[0] if team == "3_Content" and not show_content_as_team else next(parent_nodes)
             dot.edge(parent, role, color=color, style="dashed")
             staff_rows.append({"Role": role_label, "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
             local_workers.append(role)
