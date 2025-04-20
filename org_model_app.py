@@ -110,8 +110,20 @@ worker_counter = 0
 def create_workers(team, count, parent_nodes):
     global worker_counter
     local_workers = []
+    assigned = 0
+    level_counts = []
+
+    # Precompute exact worker counts per level using proportions
     for level, proportion in allocations:
-        for _ in range(math.ceil(count * proportion)):
+        exact = count * proportion
+        level_counts.append((level, exact))
+
+    # Sort by descending exact so larger buckets are filled first
+    level_counts.sort(key=lambda x: -x[1])
+
+    for level, exact in level_counts:
+        n = min(int(round(exact)), count - assigned)
+        for _ in range(n):
             salary, spine = get_salary(level, seniority)
             role = f"{team}_Worker_{worker_counter}"
             worker_counter += 1
@@ -124,6 +136,12 @@ def create_workers(team, count, parent_nodes):
             dot.edge(parent, role, color=color)
             staff_rows.append({"Role": role_label, "Level": level, "Spine Point": spine, "Salary": salary, "Team": team})
             local_workers.append(role)
+            assigned += 1
+            if assigned >= count:
+                break
+        if assigned >= count:
+            break
+
     return local_workers
 
 # Round-robin distribution to FSS managers
