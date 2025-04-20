@@ -41,7 +41,7 @@ seniority_input = st.slider("Seniority afforded", 70, 100, 100, format="%d%%")  
 seniority = (seniority_input - 76) * (100 / (100 - 76))
 
 workers_per_mgr = st.slider("Learning technologists per manager", 5, 10, 10)
-show_content_as_team = st.checkbox("Learning Content as Separate Team", value=False)
+show_content_as_team = st.checkbox("Learning content as separate team", value=False)
 
 chart_container = st.container()
 
@@ -127,7 +127,7 @@ def create_workers(team, count, parent_nodes):
             salary, spine = get_salary(level, seniority)
             role = f"{team}_Worker_{worker_counter}"
             worker_counter += 1
-            team_label = team.split('_')[1]
+            team_label = team.split('_')[1] if not (not show_content_as_team and team == "1_FSS") else "Content"
             role_label = f"{team_label} worker"
             color_map = {"FSS": "blue", "Systems": "red", "Content": "green"}
             color = color_map.get(team_label, "black")
@@ -153,7 +153,8 @@ create_workers("1_FSS", fss_num_staff, fss_mgr_cycle)
 if show_content_as_team:
     create_workers("3_Content", content_num_staff, itertools.cycle(["Content_Manager"]))
 else:
-    create_workers("1_FSS", content_num_staff, fss_mgr_cycle)
+    create_workers("1_FSS", content_num_staff, itertools.cycle([fss_mgr_nodes[0]]))  # maintain green color
+    team_label = "Content"
 
 # Systems workers
 create_workers("2_Systems", system_num_staff, itertools.cycle(["Sys_Manager"]))
