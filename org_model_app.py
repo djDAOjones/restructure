@@ -34,13 +34,13 @@ def get_salary(level, seniority_pct):
     return df_salaries.get(spine_point, 0), spine_point
 
 # --- Sliders and UI Controls ---
-staff_scale_input = st.slider("% of current staffing level", 29, 100, 50, format="%d%%")
+staff_scale_input = st.slider("% of current staffing level", 29, 100, 100, format="%d%%")
 staff_scale = (staff_scale_input - 29) * (100 / (100 - 29))
 
-seniority_input = st.slider("Seniority afforded", 76, 100, 100, format="%d%%")
+seniority_input = st.slider("Seniority afforded", 76, 100, 100, format="%d%%")  # default changed to 100%
 seniority = (seniority_input - 76) * (100 / (100 - 76))
 
-workers_per_mgr = st.slider("Workers per FSS manager", 5, 10, 8)
+workers_per_mgr = st.slider("Workers per FSS manager", 5, 10, 10)
 show_content_as_team = st.checkbox("Show Learning Content as Separate Team", value=True)
 
 chart_container = st.container()
