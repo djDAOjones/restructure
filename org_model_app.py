@@ -132,6 +132,7 @@ def create_workers(team, count, parent_nodes):
     for level, exact in level_counts:
         n = min(int(round(exact)), count - assigned)
         for _ in range(n):
+            parent = next(parent_nodes)
             salary, spine = get_salary(level, seniority)
             role = f"{team}_Worker_{worker_counter}"
             worker_counter += 1
