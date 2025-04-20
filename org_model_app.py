@@ -40,8 +40,8 @@ staff_scale = (staff_scale_input - 29) * (100 / (100 - 29))
 seniority_input = st.slider("Seniority afforded", 70, 100, 100, format="%d%%")  # default changed to 100%
 seniority = (seniority_input - 76) * (100 / (100 - 76))
 
-workers_per_mgr = st.slider("Workers per FSS manager", 5, 10, 10)
-show_content_as_team = st.checkbox("Show Learning Content as Separate Team", value=False)
+workers_per_mgr = st.slider("Learning technologists per manager", 5, 10, 10)
+show_content_as_team = st.checkbox("Learning Content as Separate Team", value=False)
 
 chart_container = st.container()
 
